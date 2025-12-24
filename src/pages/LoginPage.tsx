@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth'
 import { auth, googleProvider } from '../services/firebase'
 import { useAppSelector } from '../store'
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const { isAuthenticated, isAllowed, error: authError } = useAppSelector((state) => state.auth)
+  const [isSignUp, setIsSignUp] = useState(false)
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -17,16 +19,37 @@ export default function LoginPage() {
     navigate('/', { replace: true })
   }
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setLoading(true)
 
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      if (isSignUp) {
+        // Sign up new user
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        // Update display name if provided
+        if (name.trim()) {
+          await updateProfile(userCredential.user, { displayName: name.trim() })
+        }
+      } else {
+        // Sign in existing user
+        await signInWithEmailAndPassword(auth, email, password)
+      }
       // AuthProvider will handle the rest
-    } catch (err) {
-      setError('Invalid email or password')
+    } catch (err: unknown) {
+      const firebaseError = err as { code?: string }
+      if (firebaseError.code === 'auth/email-already-in-use') {
+        setError('Email already in use. Try signing in instead.')
+      } else if (firebaseError.code === 'auth/weak-password') {
+        setError('Password should be at least 6 characters.')
+      } else if (firebaseError.code === 'auth/invalid-email') {
+        setError('Invalid email address.')
+      } else if (firebaseError.code === 'auth/invalid-credential') {
+        setError('Invalid email or password.')
+      } else {
+        setError(isSignUp ? 'Failed to create account.' : 'Invalid email or password.')
+      }
     } finally {
       setLoading(false)
     }
@@ -63,7 +86,18 @@ export default function LoginPage() {
         )}
 
         {/* Email/Password form */}
-        <form onSubmit={handleEmailSignIn} className="space-y-4">
+        <form onSubmit={handleEmailAuth} className="space-y-4">
+          {isSignUp && (
+            <div>
+              <input
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+              />
+            </div>
+          )}
           <div>
             <input
               type="email"
@@ -82,6 +116,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
               required
+              minLength={6}
             />
           </div>
           <button
@@ -89,9 +124,21 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? (isSignUp ? 'Creating account...' : 'Signing in...') : (isSignUp ? 'Sign Up' : 'Sign In')}
           </button>
         </form>
+
+        {/* Toggle Sign In / Sign Up */}
+        <p className="text-center mt-4 text-sm text-gray-600">
+          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+          <button
+            type="button"
+            onClick={() => { setIsSignUp(!isSignUp); setError(null); }}
+            className="text-orange-500 font-semibold hover:underline"
+          >
+            {isSignUp ? 'Sign In' : 'Sign Up'}
+          </button>
+        </p>
 
         {/* Divider */}
         <div className="flex items-center my-6">
