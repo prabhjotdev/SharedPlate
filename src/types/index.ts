@@ -15,6 +15,7 @@ export interface SharedRecipe {
   ingredients: string;
   steps: string;
   notes?: string;
+  servings?: number;
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
