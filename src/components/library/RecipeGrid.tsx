@@ -22,10 +22,10 @@ export default function RecipeGrid({ recipes }: RecipeGridProps) {
         <Link
           key={recipe.id}
           to={`/library/${recipe.id}`}
-          className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow"
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow"
         >
-          <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">{recipe.title}</h3>
-          <span className="text-xs text-gray-500">
+          <h3 className="font-medium text-gray-900 dark:text-white mb-2 line-clamp-2">{recipe.title}</h3>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
             {categoryLabels[recipe.category] || recipe.category}
           </span>
         </Link>

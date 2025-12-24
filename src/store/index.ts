@@ -5,6 +5,7 @@ import authReducer from './authSlice';
 import recipesReducer from './recipesSlice';
 import libraryReducer from './librarySlice';
 import uiReducer from './uiSlice';
+import settingsReducer from './settingsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     recipes: recipesReducer,
     library: libraryReducer,
     ui: uiReducer,
+    settings: settingsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

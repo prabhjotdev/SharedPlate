@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAppSelector } from './store'
 
-// Pages (to be implemented)
+// Pages
 import LoginPage from './pages/LoginPage'
 import MyRecipesPage from './pages/MyRecipesPage'
 import LibraryPage from './pages/LibraryPage'
@@ -9,10 +9,12 @@ import RecipeViewPage from './pages/RecipeViewPage'
 import LibraryViewPage from './pages/LibraryViewPage'
 import AddRecipePage from './pages/AddRecipePage'
 import EditRecipePage from './pages/EditRecipePage'
+import SettingsPage from './pages/SettingsPage'
 
 // Components
 import Layout from './components/layout/Layout'
 import AuthProvider from './components/auth/AuthProvider'
+import ThemeProvider from './components/theme/ThemeProvider'
 import Toast from './components/common/Toast'
 
 // Protected Route wrapper
@@ -21,7 +23,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
       </div>
     )
@@ -36,35 +38,47 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        {/* Public route */}
-        <Route path="/login" element={<LoginPage />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <Routes>
+          {/* Public route */}
+          <Route path="/login" element={<LoginPage />} />
 
-        {/* Protected routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<MyRecipesPage />} />
-          <Route path="library" element={<LibraryPage />} />
-          <Route path="recipe/:id" element={<RecipeViewPage />} />
-          <Route path="recipe/:id/edit" element={<EditRecipePage />} />
-          <Route path="library/:id" element={<LibraryViewPage />} />
-          <Route path="new" element={<AddRecipePage />} />
-        </Route>
+          {/* Protected routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<MyRecipesPage />} />
+            <Route path="library" element={<LibraryPage />} />
+            <Route path="recipe/:id" element={<RecipeViewPage />} />
+            <Route path="recipe/:id/edit" element={<EditRecipePage />} />
+            <Route path="library/:id" element={<LibraryViewPage />} />
+            <Route path="new" element={<AddRecipePage />} />
+          </Route>
 
-        {/* Catch all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Settings (outside layout to have its own header) */}
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
 
-      {/* Global Toast */}
-      <Toast />
-    </AuthProvider>
+          {/* Catch all */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+
+        {/* Global Toast */}
+        <Toast />
+      </AuthProvider>
+    </ThemeProvider>
   )
 }
 
