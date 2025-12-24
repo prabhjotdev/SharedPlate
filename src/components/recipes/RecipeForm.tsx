@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DEFAULT_SERVINGS } from '../../utils/servingScaler'
 
 interface RecipeFormProps {
   initialData?: {
@@ -6,8 +7,9 @@ interface RecipeFormProps {
     ingredients: string
     steps: string
     notes: string
+    servings?: number
   }
-  onSave: (data: { title: string; ingredients: string; steps: string; notes: string }) => void
+  onSave: (data: { title: string; ingredients: string; steps: string; notes: string; servings: number }) => void
   saving: boolean
   isEdit?: boolean
 }
@@ -17,18 +19,19 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
   const [ingredients, setIngredients] = useState(initialData?.ingredients || '')
   const [steps, setSteps] = useState(initialData?.steps || '')
   const [notes, setNotes] = useState(initialData?.notes || '')
+  const [servings, setServings] = useState(initialData?.servings || DEFAULT_SERVINGS)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSave({ title, ingredients, steps, notes })
+    onSave({ title, ingredients, steps, notes, servings })
   }
 
-  const isValid = title.trim() && ingredients.trim() && steps.trim()
+  const isValid = title.trim() && ingredients.trim() && steps.trim() && servings > 0
 
   return (
     <form onSubmit={handleSubmit} className="p-4 space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Title <span className="text-red-500">*</span>
         </label>
         <input
@@ -36,46 +39,78 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Recipe name"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Servings <span className="text-red-500">*</span>
+        </label>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setServings(Math.max(1, servings - 1))}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-200 dark:hover:bg-gray-600"
+          >
+            -
+          </button>
+          <input
+            type="number"
+            value={servings}
+            onChange={(e) => setServings(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
+            min="1"
+            max="20"
+            className="w-20 p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-center text-lg font-semibold"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setServings(Math.min(20, servings + 1))}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-bold hover:bg-gray-200 dark:hover:bg-gray-600"
+          >
+            +
+          </button>
+          <span className="text-sm text-gray-500 dark:text-gray-400">people</span>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Ingredients <span className="text-red-500">*</span>
         </label>
         <textarea
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
           placeholder="Enter each ingredient on a new line..."
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none min-h-[150px] resize-y"
+          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none min-h-[150px] resize-y bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Steps <span className="text-red-500">*</span>
         </label>
         <textarea
           value={steps}
           onChange={(e) => setSteps(e.target.value)}
           placeholder="Enter each step on a new line..."
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none min-h-[200px] resize-y"
+          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none min-h-[200px] resize-y bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Notes <span className="text-gray-400">(optional)</span>
         </label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Tips, variations, etc."
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none min-h-[100px] resize-y"
+          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none min-h-[100px] resize-y bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         />
       </div>
 

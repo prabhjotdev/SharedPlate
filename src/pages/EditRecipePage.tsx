@@ -17,8 +17,8 @@ export default function EditRecipePage() {
 
   if (!recipe) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-4">
-        <p className="text-gray-500 mb-4">Recipe not found</p>
+      <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gray-50 dark:bg-gray-900">
+        <p className="text-gray-500 dark:text-gray-400 mb-4">Recipe not found</p>
         <Link to="/" className="text-orange-500 font-medium">
           Go back
         </Link>
@@ -31,6 +31,7 @@ export default function EditRecipePage() {
     ingredients: string
     steps: string
     notes: string
+    servings: number
   }) => {
     setSaving(true)
     try {
@@ -48,13 +49,13 @@ export default function EditRecipePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <button onClick={() => navigate(-1)} className="text-gray-600 font-medium">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <button onClick={() => navigate(-1)} className="text-gray-600 dark:text-gray-300 font-medium">
           Cancel
         </button>
-        <h1 className="font-semibold">Edit Recipe</h1>
+        <h1 className="font-semibold text-gray-900 dark:text-white">Edit Recipe</h1>
         <div className="w-14"></div>
       </div>
 
@@ -65,6 +66,7 @@ export default function EditRecipePage() {
           ingredients: recipe.ingredients,
           steps: recipe.steps,
           notes: recipe.notes || '',
+          servings: recipe.servings,
         }}
         onSave={handleSave}
         saving={saving}
