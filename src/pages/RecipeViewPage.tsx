@@ -4,6 +4,7 @@ import { doc, deleteDoc } from 'firebase/firestore'
 import { db } from '../services/firebase'
 import { useAppSelector, useAppDispatch } from '../store'
 import { showToast } from '../store/uiSlice'
+import { scaleIngredients, DEFAULT_SERVINGS } from '../utils/servingScaler'
 
 export default function RecipeViewPage() {
   const { id } = useParams<{ id: string }>()
@@ -12,8 +13,10 @@ export default function RecipeViewPage() {
   const { items } = useAppSelector((state) => state.recipes)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [servings, setServings] = useState(DEFAULT_SERVINGS)
 
   const recipe = items.find((r) => r.id === id)
+  const originalServings = recipe?.servings || DEFAULT_SERVINGS
 
   if (!recipe) {
     return (
@@ -25,6 +28,8 @@ export default function RecipeViewPage() {
       </div>
     )
   }
+
+  const scaledIngredients = scaleIngredients(recipe.ingredients, originalServings, servings)
 
   const handleDelete = async () => {
     setDeleting(true)
@@ -38,6 +43,14 @@ export default function RecipeViewPage() {
       setDeleting(false)
       setShowDeleteModal(false)
     }
+  }
+
+  const decreaseServings = () => {
+    if (servings > 1) setServings(servings - 1)
+  }
+
+  const increaseServings = () => {
+    if (servings < 20) setServings(servings + 1)
   }
 
   return (
@@ -75,15 +88,54 @@ export default function RecipeViewPage() {
 
       {/* Content */}
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{recipe.title}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{recipe.title}</h1>
+
+        {/* Serving Size Selector */}
+        <div className="flex items-center gap-4 mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Servings:</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={decreaseServings}
+              disabled={servings <= 1}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              -
+            </button>
+            <span className="w-8 text-center text-lg font-semibold text-gray-900 dark:text-white">
+              {servings}
+            </span>
+            <button
+              onClick={increaseServings}
+              disabled={servings >= 20}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              +
+            </button>
+          </div>
+          {servings !== originalServings && (
+            <button
+              onClick={() => setServings(originalServings)}
+              className="text-xs text-orange-600 dark:text-orange-400 underline ml-auto"
+            >
+              Reset
+            </button>
+          )}
+        </div>
 
         <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
 
         <section className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase mb-3">
-            Ingredients
-          </h2>
-          <div className="text-lg leading-relaxed whitespace-pre-line text-gray-900 dark:text-gray-100">{recipe.ingredients}</div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase">
+              Ingredients
+            </h2>
+            {servings !== originalServings && (
+              <span className="text-xs text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded-full">
+                Scaled for {servings}
+              </span>
+            )}
+          </div>
+          <div className="text-lg leading-relaxed whitespace-pre-line text-gray-900 dark:text-gray-100">{scaledIngredients}</div>
         </section>
 
         <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
