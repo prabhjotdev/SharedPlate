@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '../../services/firebase'
 import { useAppDispatch } from '../../store'
 import { setUser, setAllowed, setLoading, setError, logout } from '../../store/authSlice'
@@ -23,19 +23,24 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         }
         dispatch(setUser(user))
 
-        // Check if user is in allowedUsers collection
+        // Check if user is in allowedUsers collection, if not add them
         try {
           const allowedRef = doc(db, 'allowedUsers', user.email)
           const allowedSnap = await getDoc(allowedRef)
 
-          if (allowedSnap.exists()) {
-            dispatch(setAllowed(true))
-          } else {
-            dispatch(setAllowed(false))
-            dispatch(setError('Access denied. You are not authorized to use this app.'))
+          if (!allowedSnap.exists()) {
+            // Auto-register new users
+            await setDoc(allowedRef, {
+              email: user.email,
+              displayName: user.displayName,
+              uid: user.uid,
+              createdAt: serverTimestamp(),
+            })
           }
+
+          dispatch(setAllowed(true))
         } catch (error) {
-          console.error('Error checking allowed users:', error)
+          console.error('Error checking/adding allowed users:', error)
           dispatch(setAllowed(false))
           dispatch(setError('Error verifying access. Please try again.'))
         }
