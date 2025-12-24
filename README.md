@@ -18,7 +18,7 @@ SharedPlate is a simple, mobile-first recipe application that allows two users t
 
 | Layer          | Technology         |
 |----------------|--------------------|
-| Frontend       | React 18           |
+| Frontend       | React 18 + Vite    |
 | Routing        | React Router v6    |
 | State          | Redux Toolkit      |
 | Styling        | Tailwind CSS       |
@@ -26,6 +26,19 @@ SharedPlate is a simple, mobile-first recipe application that allows two users t
 | Database       | Cloud Firestore    |
 | Auth           | Firebase Auth      |
 | Hosting        | Firebase Hosting   |
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
 
 ## Core Features (MVP)
 
@@ -47,12 +60,6 @@ SharedPlate is a simple, mobile-first recipe application that allows two users t
 - Image uploads
 - Recipe scaling
 - Offline mode
-
-## Project Status
-
-**Phase: Design Complete**
-
-This repository contains the MVP design documentation. Implementation has not yet begun.
 
 ## License
 
