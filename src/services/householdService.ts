@@ -49,7 +49,7 @@ export async function createHousehold(name: string, user: User): Promise<Househo
     createdAt: serverTimestamp(),
     members: [{
       ...member,
-      joinedAt: serverTimestamp(),
+      joinedAt: Timestamp.now(),
     }],
   })
 
@@ -183,7 +183,7 @@ export async function joinHouseholdWithCode(code: string, user: User): Promise<H
     displayName: user.displayName,
     role: 'member',
     permission: 'full',
-    joinedAt: serverTimestamp(),
+    joinedAt: Timestamp.now(),
   }
 
   await updateDoc(householdRef, {
