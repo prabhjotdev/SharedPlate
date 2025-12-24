@@ -17,6 +17,7 @@ export default function AddRecipePage() {
     ingredients: string
     steps: string
     notes: string
+    servings: number
   }) => {
     setSaving(true)
     try {
