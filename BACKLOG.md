@@ -1,12 +1,30 @@
 # SharedPlate Feature Backlog
 
-## Meal Planning & Organization
+## Quick Wins (Small but impactful)
+
+- [ ] **Recipe Search** - Find recipes by name as list grows
+- [ ] **Prep Time / Cook Time** - Essential recipe metadata fields
+- [ ] **Difficulty Level** - Easy / Medium / Hard indicator
+- [ ] **Recipe Source** - Where it came from (URL, cookbook, family, etc.)
+
+## Better Cooking Experience
+
+- [ ] **Ingredient Checkboxes** - Check off ingredients while cooking
+- [ ] **Step Checkboxes** - Check off steps as you go
+- [ ] **Keep Screen Awake** - Prevent screen timeout while cooking
+- [ ] **Copy as Text** - Share recipe via text/message
+
+## Organization
+
+- [ ] **Sort Recipes** - By name, date added, last cooked
+- [ ] **Favorite/Star Recipes** - Quick access to top recipes
+- [ ] **Last Cooked Date** - Track when you made it
+- [ ] **Recipe Categories/Tags** - Organize recipes (breakfast, dinner, dessert, quick meals, etc.)
+- [ ] **Recipe Filtering** - Filter by category, cook time, etc.
+
+## Meal Planning
 
 - [ ] **Weekly Meal Planner** - Drag and drop recipes to days of the week
-- [ ] **Recipe Categories/Tags** - Organize recipes (breakfast, dinner, dessert, quick meals, etc.)
-- [ ] **Favorite Recipes** - Bookmark recipes for quick access
-- [ ] **Recipe Search** - Search by name or ingredient
-- [ ] **Recipe Filtering** - Filter by category, cook time, etc.
 
 ## Shopping & Pantry
 
@@ -52,3 +70,7 @@
 - [x] Serving size scaling
 - [x] Dark mode
 - [x] Member permissions management
+- [x] Delete confirmation modal
+- [x] Pull to refresh
+- [x] Better empty states
+- [x] Duplicate recipe functionality

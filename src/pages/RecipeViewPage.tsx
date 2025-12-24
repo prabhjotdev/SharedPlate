@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { doc, deleteDoc } from 'firebase/firestore'
-import { db } from '../services/firebase'
+import { doc, deleteDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { db, auth } from '../services/firebase'
 import { useAppSelector, useAppDispatch } from '../store'
 import { showToast } from '../store/uiSlice'
 import { scaleIngredients, DEFAULT_SERVINGS } from '../utils/servingScaler'
@@ -11,8 +11,10 @@ export default function RecipeViewPage() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { items } = useAppSelector((state) => state.recipes)
+  const { household } = useAppSelector((state) => state.household)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [duplicating, setDuplicating] = useState(false)
   const [servings, setServings] = useState(DEFAULT_SERVINGS)
 
   const recipe = items.find((r) => r.id === id)
@@ -53,6 +55,31 @@ export default function RecipeViewPage() {
     if (servings < 20) setServings(servings + 1)
   }
 
+  const handleDuplicate = async () => {
+    if (!recipe || !household?.id) return
+    setDuplicating(true)
+    try {
+      const docRef = await addDoc(collection(db, 'sharedRecipes'), {
+        title: `${recipe.title} (Copy)`,
+        ingredients: recipe.ingredients,
+        steps: recipe.steps,
+        notes: recipe.notes || '',
+        servings: recipe.servings || DEFAULT_SERVINGS,
+        createdBy: auth.currentUser?.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        copiedFromLibrary: null,
+        householdId: household.id,
+      })
+      dispatch(showToast({ message: 'Recipe duplicated!', type: 'success' }))
+      navigate(`/recipe/${docRef.id}`)
+    } catch (error) {
+      dispatch(showToast({ message: 'Failed to duplicate recipe', type: 'error' }))
+    } finally {
+      setDuplicating(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
@@ -62,8 +89,23 @@ export default function RecipeViewPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <div className="flex gap-2">
-          <Link to={`/recipe/${recipe.id}/edit`} className="p-2">
+        <div className="flex gap-1">
+          <button
+            onClick={handleDuplicate}
+            disabled={duplicating}
+            className="p-2 disabled:opacity-50"
+            title="Duplicate recipe"
+          >
+            <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
+            </svg>
+          </button>
+          <Link to={`/recipe/${recipe.id}/edit`} className="p-2" title="Edit recipe">
             <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
@@ -73,7 +115,7 @@ export default function RecipeViewPage() {
               />
             </svg>
           </Link>
-          <button onClick={() => setShowDeleteModal(true)} className="p-2">
+          <button onClick={() => setShowDeleteModal(true)} className="p-2" title="Delete recipe">
             <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
