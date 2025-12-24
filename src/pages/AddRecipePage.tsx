@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
-import { useAppDispatch } from '../store'
+import { useAppDispatch, useAppSelector } from '../store'
 import { showToast } from '../store/uiSlice'
 import RecipeForm from '../components/recipes/RecipeForm'
 
 export default function AddRecipePage() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const { household } = useAppSelector((state) => state.household)
   const [saving, setSaving] = useState(false)
 
   const handleSave = async (data: {
@@ -25,6 +26,7 @@ export default function AddRecipePage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         copiedFromLibrary: null,
+        householdId: household?.id,
       })
       dispatch(showToast({ message: 'Recipe saved!', type: 'success' }))
       navigate('/')

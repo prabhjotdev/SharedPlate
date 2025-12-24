@@ -6,6 +6,7 @@ import recipesReducer from './recipesSlice';
 import libraryReducer from './librarySlice';
 import uiReducer from './uiSlice';
 import settingsReducer from './settingsSlice';
+import householdReducer from './householdSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,16 +15,17 @@ export const store = configureStore({
     library: libraryReducer,
     ui: uiReducer,
     settings: settingsReducer,
+    household: householdReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         // Ignore these action types (Firebase timestamps)
-        ignoredActions: ['recipes/setRecipes'],
+        ignoredActions: ['recipes/setRecipes', 'household/setHousehold', 'household/setInviteCodes', 'household/addInviteCode'],
         // Ignore these field paths in all actions
-        ignoredActionPaths: ['payload.createdAt', 'payload.updatedAt'],
+        ignoredActionPaths: ['payload.createdAt', 'payload.updatedAt', 'payload.joinedAt', 'payload.expiresAt', 'payload.members'],
         // Ignore these paths in the state
-        ignoredPaths: ['recipes.items'],
+        ignoredPaths: ['recipes.items', 'household.household', 'household.inviteCodes'],
       },
     }),
 });

@@ -10,6 +10,7 @@ export default function LibraryViewPage() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { items } = useAppSelector((state) => state.library)
+  const { household } = useAppSelector((state) => state.household)
   const [adding, setAdding] = useState(false)
 
   const recipe = items.find((r) => r.id === id)
@@ -37,6 +38,7 @@ export default function LibraryViewPage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         copiedFromLibrary: recipe.id,
+        householdId: household?.id,
       })
       dispatch(showToast({ message: 'Recipe added to your list!', type: 'success' }))
       navigate('/')

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore'
 import { db } from '../services/firebase'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setRecipes, setLoading } from '../store/recipesSlice'
@@ -11,12 +11,19 @@ import RecipeList from '../components/recipes/RecipeList'
 export default function MyRecipesPage() {
   const dispatch = useAppDispatch()
   const { items, loading, searchQuery } = useAppSelector((state) => state.recipes)
+  const { household } = useAppSelector((state) => state.household)
 
   useEffect(() => {
+    if (!household?.id) {
+      dispatch(setRecipes([]))
+      return
+    }
+
     dispatch(setLoading(true))
 
     const recipesQuery = query(
       collection(db, 'sharedRecipes'),
+      where('householdId', '==', household.id),
       orderBy('updatedAt', 'desc')
     )
 
@@ -32,7 +39,7 @@ export default function MyRecipesPage() {
     })
 
     return () => unsubscribe()
-  }, [dispatch])
+  }, [dispatch, household?.id])
 
   // Filter recipes by search query
   const filteredRecipes = items.filter((recipe) =>
