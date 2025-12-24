@@ -96,13 +96,13 @@ export default function LibraryViewPage() {
       </div>
 
       {/* Sticky Add Button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t">
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-900 p-4 border-t border-gray-700">
         <button
           onClick={handleAddToMyRecipes}
           disabled={adding}
-          className="w-full bg-orange-500 text-white py-4 rounded-xl font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50"
+          className="w-full bg-orange-500 text-white py-4 rounded-xl font-semibold text-lg hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          {adding ? 'Adding...' : '+ Add to My Recipes'}
+          <span>{adding ? 'Adding...' : '+ Add to My Recipes'}</span>
         </button>
       </div>
     </div>
