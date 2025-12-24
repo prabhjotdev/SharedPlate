@@ -17,8 +17,8 @@ export default function RecipeViewPage() {
 
   if (!recipe) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-4">
-        <p className="text-gray-500 mb-4">Recipe not found</p>
+      <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gray-50 dark:bg-gray-900">
+        <p className="text-gray-500 dark:text-gray-400 mb-4">Recipe not found</p>
         <Link to="/" className="text-orange-500 font-medium">
           Go back
         </Link>
@@ -41,17 +41,17 @@ export default function RecipeViewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         <div className="flex gap-2">
           <Link to={`/recipe/${recipe.id}/edit`} className="p-2">
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -75,34 +75,34 @@ export default function RecipeViewPage() {
 
       {/* Content */}
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">{recipe.title}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{recipe.title}</h1>
 
-        <div className="border-t border-gray-200 my-6"></div>
+        <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
 
         <section className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-500 tracking-wide uppercase mb-3">
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase mb-3">
             Ingredients
           </h2>
-          <div className="text-lg leading-relaxed whitespace-pre-line">{recipe.ingredients}</div>
+          <div className="text-lg leading-relaxed whitespace-pre-line text-gray-900 dark:text-gray-100">{recipe.ingredients}</div>
         </section>
 
-        <div className="border-t border-gray-200 my-6"></div>
+        <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
 
         <section className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-500 tracking-wide uppercase mb-3">
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase mb-3">
             Steps
           </h2>
-          <div className="text-lg leading-relaxed whitespace-pre-line">{recipe.steps}</div>
+          <div className="text-lg leading-relaxed whitespace-pre-line text-gray-900 dark:text-gray-100">{recipe.steps}</div>
         </section>
 
         {recipe.notes && (
           <>
-            <div className="border-t border-gray-200 my-6"></div>
+            <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
             <section>
-              <h2 className="text-sm font-semibold text-gray-500 tracking-wide uppercase mb-3">
+              <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase mb-3">
                 Notes
               </h2>
-              <div className="text-lg leading-relaxed whitespace-pre-line">{recipe.notes}</div>
+              <div className="text-lg leading-relaxed whitespace-pre-line text-gray-900 dark:text-gray-100">{recipe.notes}</div>
             </section>
           </>
         )}
@@ -111,15 +111,15 @@ export default function RecipeViewPage() {
       {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-2">Delete Recipe?</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Delete Recipe?</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               Are you sure you want to delete "{recipe.title}"? This cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg font-medium"
+                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-200"
               >
                 Cancel
               </button>

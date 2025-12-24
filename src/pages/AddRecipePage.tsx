@@ -36,13 +36,13 @@ export default function AddRecipePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <button onClick={() => navigate(-1)} className="text-gray-600 font-medium">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <button onClick={() => navigate(-1)} className="text-gray-600 dark:text-gray-300 font-medium">
           Cancel
         </button>
-        <h1 className="font-semibold">Add Recipe</h1>
+        <h1 className="font-semibold text-gray-900 dark:text-white">Add Recipe</h1>
         <div className="w-14"></div>
       </div>
 

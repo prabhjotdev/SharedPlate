@@ -56,7 +56,7 @@ export default function LibraryPage() {
     <div className="pt-6">
       {/* Header */}
       <div className="px-4 mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">Recipe Library</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Recipe Library</h1>
       </div>
 
       {/* Category Tabs */}
@@ -74,7 +74,7 @@ export default function LibraryPage() {
       ) : filteredRecipes.length > 0 ? (
         <RecipeGrid recipes={filteredRecipes} />
       ) : (
-        <div className="text-center py-12 text-gray-500 px-4">
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400 px-4">
           No recipes in this category yet
         </div>
       )}

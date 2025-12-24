@@ -16,7 +16,7 @@ export default function CategoryTabs({ categories, selected, onChange }: Categor
           className={`px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors ${
             selected === category.value
               ? 'bg-orange-500 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
           }`}
         >
           {category.label}

@@ -43,7 +43,7 @@ export default function MyRecipesPage() {
     <div className="px-4 pt-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">SharedPlate</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">SharedPlate</h1>
       </div>
 
       {/* Search */}
@@ -59,7 +59,7 @@ export default function MyRecipesPage() {
       ) : items.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
           No recipes match your search
         </div>
       )}
@@ -81,8 +81,8 @@ function EmptyState() {
   return (
     <div className="text-center py-12">
       <div className="text-5xl mb-4">📖</div>
-      <h2 className="text-lg font-medium text-gray-900 mb-2">No recipes yet!</h2>
-      <p className="text-gray-500 mb-6">
+      <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No recipes yet!</h2>
+      <p className="text-gray-500 dark:text-gray-400 mb-6">
         Create your first recipe or browse the library to get started.
       </p>
       <Link
