@@ -65,6 +65,41 @@
 - [ ] **Capacitor Native App** - Wrap existing React app in native shell. Publish to App Store / Google Play Store. Access to native features (push notifications, camera for recipe photos, etc.).
 - [ ] **React Native Rewrite** - Full native experience with better performance. More development effort but best UX. Could share business logic with web app.
 
+## UI/UX Modernization
+
+### Visual Polish
+- [ ] **Skeleton Loading States** - Replace spinners with content-shaped skeleton loaders that shimmer while loading
+- [ ] **Micro-interactions** - Subtle animations on button taps, checkbox completion, card interactions
+- [ ] **Recipe Card Redesign** - Add image placeholders with food icons, subtle shadows, hover lift effects
+- [ ] **Glassmorphism Elements** - Frosted glass effect on modals and overlays for modern depth
+- [ ] **Custom Illustrations** - Hand-drawn style empty states and onboarding graphics
+- [ ] **Animated Success States** - Confetti or checkmark animation when completing all steps
+
+### Navigation & Gestures
+- [ ] **Bottom Sheet Modals** - Slide-up sheets for actions (delete, share, duplicate) instead of modals
+- [ ] **Swipe Actions** - Swipe left/right on recipe cards for quick actions (favorite, delete)
+- [ ] **Page Transitions** - Smooth slide/fade animations between pages
+- [ ] **Pull-down Quick Search** - iOS-style pull down to reveal search on home page
+- [ ] **Gesture Navigation** - Swipe from edge to go back
+
+### Recipe Experience
+- [ ] **Hero Image Layout** - Full-width image at top of recipe view with overlapping content card
+- [ ] **Sticky Section Headers** - Ingredients/Steps headers stick while scrolling
+- [ ] **Floating Progress Bar** - Shows cooking progress (X/Y steps done) at bottom while viewing recipe
+- [ ] **Quick Actions FAB Menu** - Expandable floating button with timer, scale, share options
+
+### Modern Patterns
+- [ ] **Optimistic Updates** - Instant UI feedback, sync in background
+- [ ] **Haptic Feedback** - Vibration on key actions (mobile)
+- [ ] **Animated Tab Bar** - Smooth indicator animation, icon bounce on select
+- [ ] **Staggered List Animations** - Cards animate in sequence when loading
+- [ ] **Blur Behind Modals** - Background blur when dialogs open
+
+### Onboarding & Discovery
+- [ ] **Welcome Tutorial** - Swipeable intro screens for first-time users
+- [ ] **Feature Tooltips** - Contextual hints for new features
+- [ ] **Smart Empty States** - Actionable empty states with illustrations and CTAs
+
 ---
 
 ## Completed Features
