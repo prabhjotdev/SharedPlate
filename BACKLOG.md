@@ -20,7 +20,7 @@
 - [ ] **Favorite/Star Recipes** - Quick access to top recipes
 - [ ] **Last Cooked Date** - Track when you made it
 - [ ] **Recipe Categories/Tags** - Organize recipes (breakfast, dinner, dessert, quick meals, etc.)
-- [ ] **Recipe Filtering** - Filter by category, cook time, etc.
+- [x] **Recipe Filtering** - Filter by category, cook time, etc.
 
 ## Meal Planning
 
@@ -59,6 +59,12 @@
 - [ ] **Voice/Hands-Free Mode** - Navigate recipes with voice commands
 - [ ] **Push Notifications** - New recipes added, meal plan reminders
 
+## Mobile App
+
+- [ ] **PWA (Progressive Web App)** - Add service worker + manifest for "Add to Home Screen" install, offline support. Easiest option with minimal code changes.
+- [ ] **Capacitor Native App** - Wrap existing React app in native shell. Publish to App Store / Google Play Store. Access to native features (push notifications, camera for recipe photos, etc.).
+- [ ] **React Native Rewrite** - Full native experience with better performance. More development effort but best UX. Could share business logic with web app.
+
 ---
 
 ## Completed Features
@@ -77,3 +83,4 @@
 - [x] Recipe search
 - [x] Prep time / Cook time fields
 - [x] Difficulty level indicator
+- [x] Recipe filtering (by difficulty, cook time)
