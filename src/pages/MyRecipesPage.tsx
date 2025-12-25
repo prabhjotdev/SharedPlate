@@ -8,7 +8,7 @@ import type { SharedRecipe, Difficulty } from '../types'
 import SearchBar from '../components/recipes/SearchBar'
 import RecipeList from '../components/recipes/RecipeList'
 import PullToRefresh from '../components/ui/PullToRefresh'
-import RecipeFilters, { type TimeFilter } from '../components/recipes/RecipeFilters'
+import RecipeFilters, { type TimeFilter, type SortOption } from '../components/recipes/RecipeFilters'
 
 export default function MyRecipesPage() {
   const dispatch = useAppDispatch()
@@ -18,6 +18,7 @@ export default function MyRecipesPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | 'all'>('all')
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all')
+  const [sortBy, setSortBy] = useState<SortOption>('newest')
 
   useEffect(() => {
     if (!household?.id) {
@@ -48,27 +49,42 @@ export default function MyRecipesPage() {
   }, [dispatch, household?.id])
 
   // Filter recipes by search query, difficulty, and time
-  const filteredRecipes = items.filter((recipe) => {
-    // Search filter
-    if (!recipe.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false
-    }
+  const filteredRecipes = items
+    .filter((recipe) => {
+      // Search filter
+      if (!recipe.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false
+      }
 
-    // Difficulty filter
-    if (difficultyFilter !== 'all' && recipe.difficulty !== difficultyFilter) {
-      return false
-    }
+      // Difficulty filter
+      if (difficultyFilter !== 'all' && recipe.difficulty !== difficultyFilter) {
+        return false
+      }
 
-    // Time filter (total time = prepTime + cookTime)
-    if (timeFilter !== 'all') {
-      const totalTime = (recipe.prepTime || 0) + (recipe.cookTime || 0)
-      if (timeFilter === 'quick' && totalTime >= 15) return false
-      if (timeFilter === 'medium' && (totalTime < 15 || totalTime > 30)) return false
-      if (timeFilter === 'long' && totalTime <= 30) return false
-    }
+      // Time filter (total time = prepTime + cookTime)
+      if (timeFilter !== 'all') {
+        const totalTime = (recipe.prepTime || 0) + (recipe.cookTime || 0)
+        if (timeFilter === 'quick' && totalTime >= 15) return false
+        if (timeFilter === 'medium' && (totalTime < 15 || totalTime > 30)) return false
+        if (timeFilter === 'long' && totalTime <= 30) return false
+      }
 
-    return true
-  })
+      return true
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return (b.updatedAt?.getTime() || 0) - (a.updatedAt?.getTime() || 0)
+        case 'oldest':
+          return (a.updatedAt?.getTime() || 0) - (b.updatedAt?.getTime() || 0)
+        case 'name-asc':
+          return a.title.localeCompare(b.title)
+        case 'name-desc':
+          return b.title.localeCompare(a.title)
+        default:
+          return 0
+      }
+    })
 
   const hasActiveFilters = difficultyFilter !== 'all' || timeFilter !== 'all'
 
@@ -128,16 +144,16 @@ export default function MyRecipesPage() {
         </div>
 
       {/* Search and Filter Toggle */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-stretch gap-2 mb-4">
         <div className="flex-1">
           <SearchBar />
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`p-3 rounded-xl border transition-colors ${
+          className={`px-3 rounded-xl border transition-colors flex items-center justify-center ${
             hasActiveFilters
               ? 'bg-orange-100 dark:bg-orange-900/30 border-orange-300 dark:border-orange-700 text-orange-600 dark:text-orange-400'
-              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
+              : 'bg-gray-100 dark:bg-gray-800 border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400'
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,8 +179,10 @@ export default function MyRecipesPage() {
           <RecipeFilters
             difficulty={difficultyFilter}
             timeFilter={timeFilter}
+            sortBy={sortBy}
             onDifficultyChange={setDifficultyFilter}
             onTimeFilterChange={setTimeFilter}
+            onSortChange={setSortBy}
           />
         </div>
       )}
