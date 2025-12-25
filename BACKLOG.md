@@ -2,8 +2,8 @@
 
 ## Quick Wins (Small but impactful)
 
-- [ ] **Recipe Search** - Find recipes by name as list grows
-- [ ] **Prep Time / Cook Time** - Essential recipe metadata fields
+- [x] **Recipe Search** - Find recipes by name as list grows
+- [x] **Prep Time / Cook Time** - Essential recipe metadata fields
 - [ ] **Difficulty Level** - Easy / Medium / Hard indicator
 - [ ] **Recipe Source** - Where it came from (URL, cookbook, family, etc.)
 
@@ -74,3 +74,5 @@
 - [x] Pull to refresh
 - [x] Better empty states
 - [x] Duplicate recipe functionality
+- [x] Recipe search
+- [x] Prep time / Cook time fields

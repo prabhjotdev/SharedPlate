@@ -8,8 +8,18 @@ interface RecipeFormProps {
     steps: string
     notes: string
     servings?: number
+    prepTime?: number
+    cookTime?: number
   }
-  onSave: (data: { title: string; ingredients: string; steps: string; notes: string; servings: number }) => void
+  onSave: (data: {
+    title: string
+    ingredients: string
+    steps: string
+    notes: string
+    servings: number
+    prepTime: number | null
+    cookTime: number | null
+  }) => void
   saving: boolean
   isEdit?: boolean
 }
@@ -20,10 +30,20 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
   const [steps, setSteps] = useState(initialData?.steps || '')
   const [notes, setNotes] = useState(initialData?.notes || '')
   const [servings, setServings] = useState(initialData?.servings || DEFAULT_SERVINGS)
+  const [prepTime, setPrepTime] = useState<string>(initialData?.prepTime?.toString() || '')
+  const [cookTime, setCookTime] = useState<string>(initialData?.cookTime?.toString() || '')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSave({ title, ingredients, steps, notes, servings })
+    onSave({
+      title,
+      ingredients,
+      steps,
+      notes,
+      servings,
+      prepTime: prepTime ? parseInt(prepTime) : null,
+      cookTime: cookTime ? parseInt(cookTime) : null,
+    })
   }
 
   const isValid = title.trim() && ingredients.trim() && steps.trim() && servings > 0
@@ -73,6 +93,46 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
             +
           </button>
           <span className="text-sm text-gray-500 dark:text-gray-400">people</span>
+        </div>
+      </div>
+
+      {/* Prep & Cook Time */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Prep Time <span className="text-gray-400">(optional)</span>
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              value={prepTime}
+              onChange={(e) => setPrepTime(e.target.value)}
+              placeholder="0"
+              min="0"
+              className="w-full p-3 pr-16 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400">
+              mins
+            </span>
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Cook Time <span className="text-gray-400">(optional)</span>
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              value={cookTime}
+              onChange={(e) => setCookTime(e.target.value)}
+              placeholder="0"
+              min="0"
+              className="w-full p-3 pr-16 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400">
+              mins
+            </span>
+          </div>
         </div>
       </div>
 

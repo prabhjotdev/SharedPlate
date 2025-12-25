@@ -18,11 +18,19 @@ export default function AddRecipePage() {
     steps: string
     notes: string
     servings: number
+    prepTime: number | null
+    cookTime: number | null
   }) => {
     setSaving(true)
     try {
       await addDoc(collection(db, 'sharedRecipes'), {
-        ...data,
+        title: data.title,
+        ingredients: data.ingredients,
+        steps: data.steps,
+        notes: data.notes,
+        servings: data.servings,
+        prepTime: data.prepTime,
+        cookTime: data.cookTime,
         createdBy: auth.currentUser?.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),

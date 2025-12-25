@@ -32,11 +32,19 @@ export default function EditRecipePage() {
     steps: string
     notes: string
     servings: number
+    prepTime: number | null
+    cookTime: number | null
   }) => {
     setSaving(true)
     try {
       await updateDoc(doc(db, 'sharedRecipes', recipe.id), {
-        ...data,
+        title: data.title,
+        ingredients: data.ingredients,
+        steps: data.steps,
+        notes: data.notes,
+        servings: data.servings,
+        prepTime: data.prepTime,
+        cookTime: data.cookTime,
         updatedAt: serverTimestamp(),
       })
       dispatch(showToast({ message: 'Recipe updated!', type: 'success' }))
@@ -67,6 +75,8 @@ export default function EditRecipePage() {
           steps: recipe.steps,
           notes: recipe.notes || '',
           servings: recipe.servings,
+          prepTime: recipe.prepTime,
+          cookTime: recipe.cookTime,
         }}
         onSave={handleSave}
         saving={saving}
