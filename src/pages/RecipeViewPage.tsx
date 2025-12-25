@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { doc, deleteDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
@@ -16,6 +16,8 @@ export default function RecipeViewPage() {
   const [deleting, setDeleting] = useState(false)
   const [duplicating, setDuplicating] = useState(false)
   const [servings, setServings] = useState(DEFAULT_SERVINGS)
+  const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set())
+  const [checkedSteps, setCheckedSteps] = useState<Set<number>>(new Set())
 
   const recipe = items.find((r) => r.id === id)
   const originalServings = recipe?.servings || DEFAULT_SERVINGS
@@ -32,6 +34,50 @@ export default function RecipeViewPage() {
   }
 
   const scaledIngredients = scaleIngredients(recipe.ingredients, originalServings, servings)
+
+  // Parse ingredients and steps into arrays
+  const ingredientsList = useMemo(() =>
+    scaledIngredients.split('\n').filter(line => line.trim()),
+    [scaledIngredients]
+  )
+
+  const stepsList = useMemo(() =>
+    recipe.steps.split('\n').filter(line => line.trim()),
+    [recipe.steps]
+  )
+
+  const toggleIngredient = (index: number) => {
+    setCheckedIngredients(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(index)) {
+        newSet.delete(index)
+      } else {
+        newSet.add(index)
+      }
+      return newSet
+    })
+  }
+
+  const toggleStep = (index: number) => {
+    setCheckedSteps(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(index)) {
+        newSet.delete(index)
+      } else {
+        newSet.add(index)
+      }
+      return newSet
+    })
+  }
+
+  const clearAllChecks = () => {
+    setCheckedIngredients(new Set())
+    setCheckedSteps(new Set())
+  }
+
+  const allIngredientsChecked = checkedIngredients.size === ingredientsList.length && ingredientsList.length > 0
+  const allStepsChecked = checkedSteps.size === stepsList.length && stepsList.length > 0
+  const hasAnyChecks = checkedIngredients.size > 0 || checkedSteps.size > 0
 
   const handleDelete = async () => {
     setDeleting(true)
@@ -217,26 +263,102 @@ export default function RecipeViewPage() {
 
         <section className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase">
-              Ingredients
-            </h2>
-            {servings !== originalServings && (
-              <span className="text-xs text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded-full">
-                Scaled for {servings}
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase">
+                Ingredients
+              </h2>
+              {allIngredientsChecked && (
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {servings !== originalServings && (
+                <span className="text-xs text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded-full">
+                  Scaled for {servings}
+                </span>
+              )}
+              <span className="text-xs text-gray-400 dark:text-gray-500">
+                {checkedIngredients.size}/{ingredientsList.length}
               </span>
-            )}
+            </div>
           </div>
-          <div className="text-lg leading-relaxed whitespace-pre-line text-gray-900 dark:text-gray-100">{scaledIngredients}</div>
+          <ul className="space-y-2">
+            {ingredientsList.map((ingredient, index) => (
+              <li key={index}>
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={checkedIngredients.has(index)}
+                    onChange={() => toggleIngredient(index)}
+                    className="mt-1.5 w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-orange-500 focus:ring-orange-500 dark:bg-gray-700 cursor-pointer"
+                  />
+                  <span className={`text-lg leading-relaxed transition-all ${
+                    checkedIngredients.has(index)
+                      ? 'line-through text-gray-400 dark:text-gray-500'
+                      : 'text-gray-900 dark:text-gray-100'
+                  }`}>
+                    {ingredient}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
 
         <section className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase mb-3">
-            Steps
-          </h2>
-          <div className="text-lg leading-relaxed whitespace-pre-line text-gray-900 dark:text-gray-100">{recipe.steps}</div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase">
+                Steps
+              </h2>
+              {allStepsChecked && (
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              {checkedSteps.size}/{stepsList.length}
+            </span>
+          </div>
+          <ul className="space-y-3">
+            {stepsList.map((step, index) => (
+              <li key={index}>
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={checkedSteps.has(index)}
+                    onChange={() => toggleStep(index)}
+                    className="mt-1.5 w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-orange-500 focus:ring-orange-500 dark:bg-gray-700 cursor-pointer"
+                  />
+                  <span className={`text-lg leading-relaxed transition-all ${
+                    checkedSteps.has(index)
+                      ? 'line-through text-gray-400 dark:text-gray-500'
+                      : 'text-gray-900 dark:text-gray-100'
+                  }`}>
+                    {step}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
         </section>
+
+        {/* Clear All Checkmarks */}
+        {hasAnyChecks && (
+          <div className="mb-6">
+            <button
+              onClick={clearAllChecks}
+              className="text-sm text-orange-500 hover:text-orange-600 font-medium"
+            >
+              Clear all checkmarks
+            </button>
+          </div>
+        )}
 
         {recipe.notes && (
           <>
