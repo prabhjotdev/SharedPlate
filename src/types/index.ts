@@ -57,7 +57,7 @@ export interface InviteCode {
   householdName: string;
   createdBy: string;
   createdAt: Date;
-  expiresAt: Date;
+  expiresAt: Date | null; // null means never expires
   used: boolean;
 }
 
