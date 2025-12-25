@@ -67,6 +67,10 @@ export interface LibraryRecipe {
   ingredients: string;
   steps: string;
   category: Category;
+  servings?: number;
+  prepTime?: number; // in minutes
+  cookTime?: number; // in minutes
+  difficulty?: Difficulty;
 }
 
 // Auth Types
