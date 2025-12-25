@@ -109,23 +109,20 @@ export async function createInviteCode(householdId: string, householdName: strin
   const code = generateCode()
   const codeRef = doc(collection(db, 'inviteCodes'))
 
-  const expiresAt = new Date()
-  expiresAt.setHours(expiresAt.getHours() + 48) // 48 hour expiration
-
   const inviteCode: Omit<InviteCode, 'id'> = {
     code,
     householdId,
     householdName,
     createdBy,
     createdAt: new Date(),
-    expiresAt,
+    expiresAt: null, // Never expires
     used: false,
   }
 
   await setDoc(codeRef, {
     ...inviteCode,
     createdAt: serverTimestamp(),
-    expiresAt: Timestamp.fromDate(expiresAt),
+    expiresAt: null, // Never expires
   })
 
   return { id: codeRef.id, ...inviteCode }
@@ -144,10 +141,7 @@ export async function validateInviteCode(code: string): Promise<InviteCode | nul
   const docSnap = snapshot.docs[0]
   const data = docSnap.data()
 
-  const expiresAt = data.expiresAt?.toDate() || new Date()
-  if (expiresAt < new Date()) {
-    return null // Code expired
-  }
+  // Invite codes never expire - no expiration check needed
 
   return {
     id: docSnap.id,
@@ -156,7 +150,7 @@ export async function validateInviteCode(code: string): Promise<InviteCode | nul
     householdName: data.householdName,
     createdBy: data.createdBy,
     createdAt: data.createdAt?.toDate() || new Date(),
-    expiresAt,
+    expiresAt: data.expiresAt?.toDate() || null,
     used: data.used,
   }
 }
@@ -264,20 +258,18 @@ export async function getHouseholdInviteCodes(householdId: string): Promise<Invi
   const q = query(codesRef, where('householdId', '==', householdId), where('used', '==', false))
   const snapshot = await getDocs(q)
 
-  const now = new Date()
-  return snapshot.docs
-    .map(docSnap => {
-      const data = docSnap.data()
-      return {
-        id: docSnap.id,
-        code: data.code,
-        householdId: data.householdId,
-        householdName: data.householdName,
-        createdBy: data.createdBy,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        expiresAt: data.expiresAt?.toDate() || new Date(),
-        used: data.used,
-      }
-    })
-    .filter(code => code.expiresAt > now)
+  // Invite codes never expire - return all unused codes
+  return snapshot.docs.map(docSnap => {
+    const data = docSnap.data()
+    return {
+      id: docSnap.id,
+      code: data.code,
+      householdId: data.householdId,
+      householdName: data.householdName,
+      createdBy: data.createdBy,
+      createdAt: data.createdAt?.toDate() || new Date(),
+      expiresAt: data.expiresAt?.toDate() || null,
+      used: data.used,
+    }
+  })
 }
