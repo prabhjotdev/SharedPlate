@@ -5,6 +5,7 @@ import { db, auth } from '../services/firebase'
 import { useAppDispatch, useAppSelector } from '../store'
 import { showToast } from '../store/uiSlice'
 import RecipeForm from '../components/recipes/RecipeForm'
+import type { Difficulty } from '../types'
 
 export default function AddRecipePage() {
   const navigate = useNavigate()
@@ -20,6 +21,7 @@ export default function AddRecipePage() {
     servings: number
     prepTime: number | null
     cookTime: number | null
+    difficulty: Difficulty | null
   }) => {
     setSaving(true)
     try {
@@ -31,6 +33,7 @@ export default function AddRecipePage() {
         servings: data.servings,
         prepTime: data.prepTime,
         cookTime: data.cookTime,
+        difficulty: data.difficulty,
         createdBy: auth.currentUser?.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),

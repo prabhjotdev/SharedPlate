@@ -4,7 +4,7 @@
 
 - [x] **Recipe Search** - Find recipes by name as list grows
 - [x] **Prep Time / Cook Time** - Essential recipe metadata fields
-- [ ] **Difficulty Level** - Easy / Medium / Hard indicator
+- [x] **Difficulty Level** - Easy / Medium / Hard indicator
 - [ ] **Recipe Source** - Where it came from (URL, cookbook, family, etc.)
 
 ## Better Cooking Experience
@@ -76,3 +76,4 @@
 - [x] Duplicate recipe functionality
 - [x] Recipe search
 - [x] Prep time / Cook time fields
+- [x] Difficulty level indicator
