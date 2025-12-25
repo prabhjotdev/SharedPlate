@@ -1,12 +1,15 @@
 import type { Difficulty } from '../../types'
 
 export type TimeFilter = 'all' | 'quick' | 'medium' | 'long'
+export type SortOption = 'newest' | 'oldest' | 'name-asc' | 'name-desc'
 
 interface RecipeFiltersProps {
   difficulty: Difficulty | 'all'
   timeFilter: TimeFilter
+  sortBy: SortOption
   onDifficultyChange: (difficulty: Difficulty | 'all') => void
   onTimeFilterChange: (time: TimeFilter) => void
+  onSortChange: (sort: SortOption) => void
 }
 
 const DIFFICULTY_OPTIONS: { value: Difficulty | 'all'; label: string }[] = [
@@ -23,14 +26,41 @@ const TIME_OPTIONS: { value: TimeFilter; label: string }[] = [
   { value: 'long', label: '>30 min' },
 ]
 
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'newest', label: 'Newest first' },
+  { value: 'oldest', label: 'Oldest first' },
+  { value: 'name-asc', label: 'Name (A-Z)' },
+  { value: 'name-desc', label: 'Name (Z-A)' },
+]
+
 export default function RecipeFilters({
   difficulty,
   timeFilter,
+  sortBy,
   onDifficultyChange,
   onTimeFilterChange,
+  onSortChange,
 }: RecipeFiltersProps) {
   return (
-    <div className="space-y-3 mb-4">
+    <div className="space-y-3">
+      {/* Sort */}
+      <div>
+        <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 block">
+          Sort by
+        </label>
+        <select
+          value={sortBy}
+          onChange={(e) => onSortChange(e.target.value as SortOption)}
+          className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+        >
+          {SORT_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Difficulty Filter */}
       <div>
         <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 block">

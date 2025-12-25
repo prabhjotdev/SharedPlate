@@ -16,7 +16,7 @@
 
 ## Organization
 
-- [ ] **Sort Recipes** - By name, date added, last cooked
+- [x] **Sort Recipes** - By name, date added, last cooked
 - [ ] **Favorite/Star Recipes** - Quick access to top recipes
 - [ ] **Last Cooked Date** - Track when you made it
 - [ ] **Recipe Categories/Tags** - Organize recipes (breakfast, dinner, dessert, quick meals, etc.)
@@ -84,3 +84,4 @@
 - [x] Prep time / Cook time fields
 - [x] Difficulty level indicator
 - [x] Recipe filtering (by difficulty, cook time)
+- [x] Recipe sorting (newest, oldest, name A-Z/Z-A)
