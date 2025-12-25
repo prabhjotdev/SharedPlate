@@ -224,7 +224,7 @@ export default function SettingsPage() {
                 </button>
               )}
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                Share this code with family or friends. Expires in 48 hours.
+                Share this code with family or friends.
               </p>
             </div>
 
