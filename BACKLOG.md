@@ -9,8 +9,8 @@
 
 ## Better Cooking Experience
 
-- [ ] **Ingredient Checkboxes** - Check off ingredients while cooking
-- [ ] **Step Checkboxes** - Check off steps as you go
+- [x] **Ingredient Checkboxes** - Check off ingredients while cooking
+- [x] **Step Checkboxes** - Check off steps as you go
 - [ ] **Keep Screen Awake** - Prevent screen timeout while cooking
 - [ ] **Copy as Text** - Share recipe via text/message
 
@@ -85,3 +85,4 @@
 - [x] Difficulty level indicator
 - [x] Recipe filtering (by difficulty, cook time)
 - [x] Recipe sorting (newest, oldest, name A-Z/Z-A)
+- [x] Ingredient and step checkboxes while cooking
