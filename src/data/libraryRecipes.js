@@ -6,6 +6,9 @@ export const libraryRecipes = [
   {
     title: "Greek Yogurt Protein Bowl",
     category: "breakfast",
+    prepTime: 5,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `2 cups Greek yogurt (plain, full-fat)
 1/4 cup almonds, sliced
 2 tbsp chia seeds
@@ -21,6 +24,9 @@ export const libraryRecipes = [
   {
     title: "Scrambled Eggs with Cottage Cheese",
     category: "breakfast",
+    prepTime: 5,
+    cookTime: 10,
+    difficulty: "easy",
     ingredients: `4 large eggs
 1/2 cup cottage cheese
 2 tbsp butter
@@ -38,6 +44,9 @@ Fresh chives, chopped
   {
     title: "Protein Pancakes",
     category: "breakfast",
+    prepTime: 10,
+    cookTime: 15,
+    difficulty: "easy",
     ingredients: `1 cup oats
 1 scoop vanilla protein powder
 1 banana, mashed
@@ -56,6 +65,9 @@ Butter for cooking`,
   {
     title: "Egg White Veggie Omelette",
     category: "breakfast",
+    prepTime: 10,
+    cookTime: 8,
+    difficulty: "easy",
     ingredients: `6 egg whites
 1/4 cup spinach, chopped
 1/4 cup bell peppers, diced
@@ -75,6 +87,9 @@ Fresh herbs`,
   {
     title: "Overnight Protein Oats",
     category: "breakfast",
+    prepTime: 10,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `1 cup rolled oats
 1 scoop protein powder
 1 cup almond milk
@@ -92,6 +107,9 @@ Honey to taste`,
   {
     title: "Chicken Sausage Breakfast Scramble",
     category: "breakfast",
+    prepTime: 10,
+    cookTime: 15,
+    difficulty: "easy",
     ingredients: `2 chicken sausage links, sliced
 4 eggs, beaten
 1 cup spinach
@@ -110,6 +128,9 @@ Hot sauce (optional)`,
   {
     title: "Tofu Scramble",
     category: "breakfast",
+    prepTime: 10,
+    cookTime: 12,
+    difficulty: "easy",
     ingredients: `1 block firm tofu, drained
 1 tbsp nutritional yeast
 1/2 tsp turmeric
@@ -130,6 +151,9 @@ Fresh spinach`,
   {
     title: "Smoked Salmon Avocado Toast",
     category: "breakfast",
+    prepTime: 10,
+    cookTime: 3,
+    difficulty: "easy",
     ingredients: `2 slices whole grain bread
 1 ripe avocado
 4 oz smoked salmon
@@ -149,6 +173,9 @@ Everything bagel seasoning`,
   {
     title: "Peanut Butter Banana Smoothie",
     category: "breakfast",
+    prepTime: 5,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `1 banana, frozen
 2 tbsp peanut butter
 1 scoop vanilla protein powder
@@ -165,6 +192,9 @@ Ice cubes`,
   {
     title: "Chickpea Flour Omelette",
     category: "breakfast",
+    prepTime: 15,
+    cookTime: 10,
+    difficulty: "medium",
     ingredients: `1/2 cup chickpea flour
 1/2 cup water
 1/4 tsp turmeric
@@ -187,6 +217,9 @@ Fresh herbs`,
   {
     title: "Grilled Chicken Caesar Salad",
     category: "lunch",
+    prepTime: 15,
+    cookTime: 15,
+    difficulty: "easy",
     ingredients: `2 chicken breasts
 1 head romaine lettuce, chopped
 1/2 cup parmesan, shaved
@@ -205,6 +238,9 @@ Black pepper`,
   {
     title: "Quinoa Buddha Bowl",
     category: "lunch",
+    prepTime: 15,
+    cookTime: 25,
+    difficulty: "medium",
     ingredients: `1 cup quinoa, cooked
 1 cup chickpeas, roasted
 1 cup roasted sweet potato cubes
@@ -224,6 +260,9 @@ Seeds for topping`,
   {
     title: "Chicken Lettuce Wraps",
     category: "lunch",
+    prepTime: 10,
+    cookTime: 12,
+    difficulty: "easy",
     ingredients: `1 lb ground chicken
 1 tbsp sesame oil
 3 cloves garlic, minced
@@ -245,6 +284,9 @@ Sriracha (optional)`,
   {
     title: "Lentil Soup",
     category: "lunch",
+    prepTime: 15,
+    cookTime: 35,
+    difficulty: "easy",
     ingredients: `2 cups green or brown lentils
 1 onion, diced
 3 carrots, diced
@@ -266,6 +308,9 @@ Fresh lemon juice`,
   {
     title: "Greek Chicken Pita",
     category: "lunch",
+    prepTime: 15,
+    cookTime: 15,
+    difficulty: "easy",
     ingredients: `2 chicken breasts, grilled and sliced
 4 whole wheat pitas
 1 cup cucumber, diced
@@ -285,6 +330,9 @@ Fresh dill`,
   {
     title: "Black Bean Tacos",
     category: "lunch",
+    prepTime: 10,
+    cookTime: 10,
+    difficulty: "easy",
     ingredients: `2 cans black beans, drained
 1 tsp cumin
 1 tsp chili powder
@@ -305,6 +353,9 @@ Hot sauce`,
   {
     title: "Tuna Salad Stuffed Avocado",
     category: "lunch",
+    prepTime: 10,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `2 cans tuna, drained
 2 tbsp Greek yogurt
 1 tbsp Dijon mustard
@@ -323,6 +374,9 @@ Lemon juice`,
   {
     title: "Edamame Fried Rice",
     category: "lunch",
+    prepTime: 10,
+    cookTime: 15,
+    difficulty: "medium",
     ingredients: `3 cups cooked brown rice, cold
 1 cup edamame, shelled
 3 eggs, beaten
@@ -342,6 +396,9 @@ Ginger, minced`,
   {
     title: "Chicken Avocado Wrap",
     category: "lunch",
+    prepTime: 10,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `2 grilled chicken breasts, sliced
 2 large whole wheat tortillas
 1 avocado, mashed
@@ -360,6 +417,9 @@ Salt, pepper, lime juice`,
   {
     title: "Mediterranean Chickpea Salad",
     category: "lunch",
+    prepTime: 15,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `2 cans chickpeas, drained
 1 cucumber, diced
 1 cup cherry tomatoes, halved
@@ -382,6 +442,9 @@ Fresh oregano`,
   {
     title: "Baked Lemon Herb Chicken",
     category: "dinner",
+    prepTime: 15,
+    cookTime: 40,
+    difficulty: "easy",
     ingredients: `4 chicken thighs, bone-in
 3 tbsp olive oil
 4 cloves garlic, minced
@@ -400,6 +463,9 @@ Salt and pepper
   {
     title: "Grilled Chicken with Quinoa",
     category: "dinner",
+    prepTime: 20,
+    cookTime: 25,
+    difficulty: "medium",
     ingredients: `4 chicken breasts
 1 cup quinoa
 2 cups chicken broth
@@ -419,6 +485,9 @@ Olive oil and lemon`,
   {
     title: "Paneer Tikka Masala",
     category: "dinner",
+    prepTime: 20,
+    cookTime: 30,
+    difficulty: "medium",
     ingredients: `14 oz paneer, cubed
 1 cup Greek yogurt
 2 tbsp tikka masala paste
@@ -441,6 +510,9 @@ Basmati rice for serving`,
   {
     title: "Chicken Stir-Fry",
     category: "dinner",
+    prepTime: 15,
+    cookTime: 15,
+    difficulty: "easy",
     ingredients: `1.5 lbs chicken breast, sliced thin
 2 cups broccoli florets
 1 red bell pepper, sliced
@@ -463,6 +535,9 @@ Brown rice`,
   {
     title: "Baked Salmon with Asparagus",
     category: "dinner",
+    prepTime: 10,
+    cookTime: 18,
+    difficulty: "easy",
     ingredients: `4 salmon fillets
 1 lb asparagus, trimmed
 3 tbsp olive oil
@@ -483,6 +558,9 @@ Honey mustard glaze`,
   {
     title: "Turkey Meatballs in Marinara",
     category: "dinner",
+    prepTime: 20,
+    cookTime: 30,
+    difficulty: "medium",
     ingredients: `1.5 lbs ground turkey
 1/2 cup breadcrumbs
 1 egg
@@ -504,6 +582,9 @@ Mozzarella for topping`,
   {
     title: "Chickpea Curry",
     category: "dinner",
+    prepTime: 10,
+    cookTime: 25,
+    difficulty: "easy",
     ingredients: `2 cans chickpeas, drained
 1 can coconut milk
 2 cups spinach
@@ -525,6 +606,9 @@ Naan bread`,
   {
     title: "Grilled Chicken Fajitas",
     category: "dinner",
+    prepTime: 15,
+    cookTime: 20,
+    difficulty: "easy",
     ingredients: `1.5 lbs chicken breast
 3 bell peppers, sliced
 2 onions, sliced
@@ -545,6 +629,9 @@ Lime wedges`,
   {
     title: "Lentil Dal",
     category: "dinner",
+    prepTime: 10,
+    cookTime: 30,
+    difficulty: "easy",
     ingredients: `1.5 cups red lentils
 1 can coconut milk
 4 cups vegetable broth
@@ -567,6 +654,9 @@ Rice for serving`,
   {
     title: "Chicken Shawarma Bowl",
     category: "dinner",
+    prepTime: 15,
+    cookTime: 20,
+    difficulty: "medium",
     ingredients: `1.5 lbs chicken thighs
 2 tsp cumin
 2 tsp paprika
@@ -589,6 +679,9 @@ Tahini sauce`,
   {
     title: "Stuffed Bell Peppers",
     category: "dinner",
+    prepTime: 20,
+    cookTime: 40,
+    difficulty: "medium",
     ingredients: `6 bell peppers, tops removed
 1 lb ground chicken
 1 cup cooked quinoa
@@ -609,6 +702,9 @@ Fresh cilantro`,
   {
     title: "Tofu Stir-Fry with Peanut Sauce",
     category: "dinner",
+    prepTime: 15,
+    cookTime: 20,
+    difficulty: "medium",
     ingredients: `1 block extra-firm tofu, cubed
 2 cups broccoli
 1 red bell pepper, sliced
@@ -631,6 +727,9 @@ Brown rice`,
   {
     title: "Grilled Chicken Souvlaki",
     category: "dinner",
+    prepTime: 15,
+    cookTime: 15,
+    difficulty: "medium",
     ingredients: `2 lbs chicken breast, cubed
 1/4 cup olive oil
 3 cloves garlic, minced
@@ -651,6 +750,9 @@ Lemon wedges`,
   {
     title: "Black Bean Burgers",
     category: "dinner",
+    prepTime: 15,
+    cookTime: 15,
+    difficulty: "medium",
     ingredients: `2 cans black beans, drained
 1/2 cup oats
 1 egg
@@ -671,6 +773,9 @@ Avocado, lettuce, tomato`,
   {
     title: "Teriyaki Chicken",
     category: "dinner",
+    prepTime: 10,
+    cookTime: 25,
+    difficulty: "easy",
     ingredients: `4 chicken thighs
 1/2 cup soy sauce
 1/4 cup honey
@@ -695,6 +800,9 @@ Steamed rice and broccoli`,
   {
     title: "Hard Boiled Eggs with Everything Seasoning",
     category: "snacks",
+    prepTime: 5,
+    cookTime: 15,
+    difficulty: "easy",
     ingredients: `6 eggs
 Everything bagel seasoning
 Salt`,
@@ -709,6 +817,9 @@ Salt`,
   {
     title: "Cottage Cheese with Berries",
     category: "snacks",
+    prepTime: 5,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `1 cup cottage cheese
 1/2 cup mixed berries
 1 tbsp honey
@@ -723,6 +834,9 @@ Mint leaves`,
   {
     title: "Spiced Roasted Chickpeas",
     category: "snacks",
+    prepTime: 5,
+    cookTime: 40,
+    difficulty: "easy",
     ingredients: `2 cans chickpeas, drained and dried
 2 tbsp olive oil
 1 tsp cumin
@@ -739,6 +853,9 @@ Salt`,
   {
     title: "Greek Yogurt Dip with Veggies",
     category: "snacks",
+    prepTime: 10,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `1 cup Greek yogurt
 1 cucumber, grated and squeezed dry
 2 cloves garlic, minced
@@ -754,6 +871,9 @@ Carrots, celery, bell peppers for dipping`,
   {
     title: "Edamame with Sea Salt",
     category: "snacks",
+    prepTime: 2,
+    cookTime: 5,
+    difficulty: "easy",
     ingredients: `2 cups frozen edamame in pods
 1 tbsp sesame oil
 Flaky sea salt
@@ -768,6 +888,9 @@ Red pepper flakes (optional)`,
   {
     title: "Protein Energy Balls",
     category: "snacks",
+    prepTime: 15,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `1 cup oats
 1/2 cup peanut butter
 1/3 cup honey
@@ -783,6 +906,9 @@ Red pepper flakes (optional)`,
   {
     title: "Turkey and Cheese Roll-Ups",
     category: "snacks",
+    prepTime: 5,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `8 slices deli turkey
 4 slices Swiss cheese
 Hummus or mustard
@@ -799,6 +925,9 @@ Spinach leaves`,
   {
     title: "Almond Butter Apple Slices",
     category: "snacks",
+    prepTime: 5,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `2 apples, sliced
 4 tbsp almond butter
 2 tbsp granola
@@ -815,6 +944,9 @@ Cinnamon`,
   {
     title: "Spinach and Ricotta Stuffed Shells",
     category: "vegetarian",
+    prepTime: 25,
+    cookTime: 35,
+    difficulty: "medium",
     ingredients: `20 jumbo pasta shells
 2 cups ricotta cheese
 2 cups spinach, chopped
@@ -835,6 +967,9 @@ Fresh basil`,
   {
     title: "Caprese Quinoa Salad",
     category: "vegetarian",
+    prepTime: 15,
+    cookTime: 20,
+    difficulty: "easy",
     ingredients: `2 cups cooked quinoa
 2 cups cherry tomatoes, halved
 8 oz fresh mozzarella, cubed
@@ -853,6 +988,9 @@ Salt and pepper`,
   {
     title: "Vegetable Pad Thai",
     category: "vegetarian",
+    prepTime: 20,
+    cookTime: 15,
+    difficulty: "medium",
     ingredients: `8 oz rice noodles
 2 eggs, beaten
 1 cup tofu, cubed
@@ -875,6 +1013,9 @@ Green onions`,
   {
     title: "Eggplant Parmesan",
     category: "vegetarian",
+    prepTime: 30,
+    cookTime: 45,
+    difficulty: "hard",
     ingredients: `2 large eggplants, sliced
 2 cups breadcrumbs
 1 cup parmesan, grated
@@ -895,6 +1036,9 @@ Salt`,
   {
     title: "Greek Feta Bake",
     category: "vegetarian",
+    prepTime: 10,
+    cookTime: 30,
+    difficulty: "easy",
     ingredients: `1 block feta cheese
 2 cups cherry tomatoes
 4 cloves garlic
@@ -915,6 +1059,9 @@ Crusty bread`,
   {
     title: "Mushroom and White Bean Soup",
     category: "vegetarian",
+    prepTime: 15,
+    cookTime: 30,
+    difficulty: "easy",
     ingredients: `1 lb mixed mushrooms, sliced
 2 cans cannellini beans
 4 cups vegetable broth
@@ -936,6 +1083,9 @@ Crusty bread`,
   {
     title: "Tempeh Tacos",
     category: "vegetarian",
+    prepTime: 10,
+    cookTime: 12,
+    difficulty: "easy",
     ingredients: `1 package tempeh, crumbled
 2 tbsp soy sauce
 1 tbsp maple syrup
@@ -956,6 +1106,9 @@ Lime`,
   {
     title: "Palak Paneer",
     category: "vegetarian",
+    prepTime: 15,
+    cookTime: 25,
+    difficulty: "medium",
     ingredients: `14 oz paneer, cubed
 4 cups spinach
 1 onion, diced
@@ -980,6 +1133,9 @@ Basmati rice`,
   {
     title: "15-Minute Chicken Quesadillas",
     category: "quick-meals",
+    prepTime: 5,
+    cookTime: 10,
+    difficulty: "easy",
     ingredients: `2 cups rotisserie chicken, shredded
 4 large flour tortillas
 2 cups Mexican blend cheese
@@ -998,6 +1154,9 @@ Hot sauce`,
   {
     title: "Greek Salad with Grilled Chicken",
     category: "quick-meals",
+    prepTime: 10,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `2 pre-cooked chicken breasts
 1 cucumber, chopped
 2 cups cherry tomatoes
@@ -1016,6 +1175,9 @@ Pita chips`,
   {
     title: "5-Minute Egg Fried Rice",
     category: "quick-meals",
+    prepTime: 2,
+    cookTime: 5,
+    difficulty: "easy",
     ingredients: `3 cups leftover rice, cold
 3 eggs, beaten
 1 cup frozen peas and carrots
@@ -1034,6 +1196,9 @@ Garlic powder`,
   {
     title: "Tuna Melt",
     category: "quick-meals",
+    prepTime: 5,
+    cookTime: 8,
+    difficulty: "easy",
     ingredients: `2 cans tuna, drained
 3 tbsp mayonnaise
 4 slices sourdough bread
@@ -1052,6 +1217,9 @@ Pickles`,
   {
     title: "Chickpea Salad Sandwich",
     category: "quick-meals",
+    prepTime: 10,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `1 can chickpeas, drained
 2 tbsp Greek yogurt
 1 tbsp Dijon mustard
@@ -1070,6 +1238,9 @@ Lettuce
   {
     title: "Caprese Chicken",
     category: "quick-meals",
+    prepTime: 5,
+    cookTime: 12,
+    difficulty: "easy",
     ingredients: `4 thin chicken cutlets
 4 slices fresh mozzarella
 4 slices tomato
@@ -1088,6 +1259,9 @@ Salt and pepper`,
   {
     title: "Quick Shrimp Tacos",
     category: "quick-meals",
+    prepTime: 5,
+    cookTime: 8,
+    difficulty: "easy",
     ingredients: `1 lb shrimp, peeled and deveined
 2 tsp taco seasoning
 8 small corn tortillas
@@ -1106,6 +1280,9 @@ Fresh cilantro`,
   {
     title: "Protein Power Bowl",
     category: "quick-meals",
+    prepTime: 5,
+    cookTime: 3,
+    difficulty: "easy",
     ingredients: `1 packet pre-cooked quinoa
 1 can black beans, drained
 1 avocado, sliced
@@ -1123,6 +1300,9 @@ Lime-cilantro dressing`,
   {
     title: "Cottage Cheese Veggie Bowl",
     category: "quick-meals",
+    prepTime: 5,
+    cookTime: 0,
+    difficulty: "easy",
     ingredients: `2 cups cottage cheese
 1 cucumber, diced
 1 cup cherry tomatoes, halved
