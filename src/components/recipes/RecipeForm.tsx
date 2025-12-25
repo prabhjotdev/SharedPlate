@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { DEFAULT_SERVINGS } from '../../utils/servingScaler'
+import type { Difficulty } from '../../types'
 
 interface RecipeFormProps {
   initialData?: {
@@ -8,11 +9,29 @@ interface RecipeFormProps {
     steps: string
     notes: string
     servings?: number
+    prepTime?: number
+    cookTime?: number
+    difficulty?: Difficulty
   }
-  onSave: (data: { title: string; ingredients: string; steps: string; notes: string; servings: number }) => void
+  onSave: (data: {
+    title: string
+    ingredients: string
+    steps: string
+    notes: string
+    servings: number
+    prepTime: number | null
+    cookTime: number | null
+    difficulty: Difficulty | null
+  }) => void
   saving: boolean
   isEdit?: boolean
 }
+
+const DIFFICULTY_OPTIONS: { value: Difficulty; label: string; color: string }[] = [
+  { value: 'easy', label: 'Easy', color: 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700' },
+  { value: 'medium', label: 'Medium', color: 'bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700' },
+  { value: 'hard', label: 'Hard', color: 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700' },
+]
 
 export default function RecipeForm({ initialData, onSave, saving, isEdit }: RecipeFormProps) {
   const [title, setTitle] = useState(initialData?.title || '')
@@ -20,10 +39,22 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
   const [steps, setSteps] = useState(initialData?.steps || '')
   const [notes, setNotes] = useState(initialData?.notes || '')
   const [servings, setServings] = useState(initialData?.servings || DEFAULT_SERVINGS)
+  const [prepTime, setPrepTime] = useState<string>(initialData?.prepTime?.toString() || '')
+  const [cookTime, setCookTime] = useState<string>(initialData?.cookTime?.toString() || '')
+  const [difficulty, setDifficulty] = useState<Difficulty | null>(initialData?.difficulty || null)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSave({ title, ingredients, steps, notes, servings })
+    onSave({
+      title,
+      ingredients,
+      steps,
+      notes,
+      servings,
+      prepTime: prepTime ? parseInt(prepTime) : null,
+      cookTime: cookTime ? parseInt(cookTime) : null,
+      difficulty,
+    })
   }
 
   const isValid = title.trim() && ingredients.trim() && steps.trim() && servings > 0
@@ -73,6 +104,69 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
             +
           </button>
           <span className="text-sm text-gray-500 dark:text-gray-400">people</span>
+        </div>
+      </div>
+
+      {/* Prep & Cook Time */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Prep Time <span className="text-gray-400">(optional)</span>
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              value={prepTime}
+              onChange={(e) => setPrepTime(e.target.value)}
+              placeholder="0"
+              min="0"
+              className="w-full p-3 pr-16 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400">
+              mins
+            </span>
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Cook Time <span className="text-gray-400">(optional)</span>
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              value={cookTime}
+              onChange={(e) => setCookTime(e.target.value)}
+              placeholder="0"
+              min="0"
+              className="w-full p-3 pr-16 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400">
+              mins
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Difficulty */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Difficulty <span className="text-gray-400">(optional)</span>
+        </label>
+        <div className="flex gap-2">
+          {DIFFICULTY_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setDifficulty(difficulty === option.value ? null : option.value)}
+              className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                difficulty === option.value
+                  ? option.color
+                  : 'bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
       </div>
 

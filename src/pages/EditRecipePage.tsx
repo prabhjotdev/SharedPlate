@@ -5,6 +5,7 @@ import { db } from '../services/firebase'
 import { useAppSelector, useAppDispatch } from '../store'
 import { showToast } from '../store/uiSlice'
 import RecipeForm from '../components/recipes/RecipeForm'
+import type { Difficulty } from '../types'
 
 export default function EditRecipePage() {
   const { id } = useParams<{ id: string }>()
@@ -32,11 +33,21 @@ export default function EditRecipePage() {
     steps: string
     notes: string
     servings: number
+    prepTime: number | null
+    cookTime: number | null
+    difficulty: Difficulty | null
   }) => {
     setSaving(true)
     try {
       await updateDoc(doc(db, 'sharedRecipes', recipe.id), {
-        ...data,
+        title: data.title,
+        ingredients: data.ingredients,
+        steps: data.steps,
+        notes: data.notes,
+        servings: data.servings,
+        prepTime: data.prepTime,
+        cookTime: data.cookTime,
+        difficulty: data.difficulty,
         updatedAt: serverTimestamp(),
       })
       dispatch(showToast({ message: 'Recipe updated!', type: 'success' }))
@@ -67,6 +78,9 @@ export default function EditRecipePage() {
           steps: recipe.steps,
           notes: recipe.notes || '',
           servings: recipe.servings,
+          prepTime: recipe.prepTime,
+          cookTime: recipe.cookTime,
+          difficulty: recipe.difficulty,
         }}
         onSave={handleSave}
         saving={saving}

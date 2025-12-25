@@ -9,6 +9,8 @@ export type Category =
   | 'vegetarian'
   | 'quick-meals';
 
+export type Difficulty = 'easy' | 'medium' | 'hard';
+
 export interface SharedRecipe {
   id: string;
   title: string;
@@ -16,6 +18,9 @@ export interface SharedRecipe {
   steps: string;
   notes?: string;
   servings?: number;
+  prepTime?: number; // in minutes
+  cookTime?: number; // in minutes
+  difficulty?: Difficulty;
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
