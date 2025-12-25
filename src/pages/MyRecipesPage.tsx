@@ -4,16 +4,20 @@ import { collection, onSnapshot, orderBy, query, where, getDocs } from 'firebase
 import { db } from '../services/firebase'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setRecipes, setLoading } from '../store/recipesSlice'
-import type { SharedRecipe } from '../types'
+import type { SharedRecipe, Difficulty } from '../types'
 import SearchBar from '../components/recipes/SearchBar'
 import RecipeList from '../components/recipes/RecipeList'
 import PullToRefresh from '../components/ui/PullToRefresh'
+import RecipeFilters, { type TimeFilter } from '../components/recipes/RecipeFilters'
 
 export default function MyRecipesPage() {
   const dispatch = useAppDispatch()
   const { items, loading, searchQuery } = useAppSelector((state) => state.recipes)
   const { household } = useAppSelector((state) => state.household)
   const [refreshing, setRefreshing] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
+  const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | 'all'>('all')
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>('all')
 
   useEffect(() => {
     if (!household?.id) {
@@ -43,10 +47,35 @@ export default function MyRecipesPage() {
     return () => unsubscribe()
   }, [dispatch, household?.id])
 
-  // Filter recipes by search query
-  const filteredRecipes = items.filter((recipe) =>
-    recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  // Filter recipes by search query, difficulty, and time
+  const filteredRecipes = items.filter((recipe) => {
+    // Search filter
+    if (!recipe.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false
+    }
+
+    // Difficulty filter
+    if (difficultyFilter !== 'all' && recipe.difficulty !== difficultyFilter) {
+      return false
+    }
+
+    // Time filter (total time = prepTime + cookTime)
+    if (timeFilter !== 'all') {
+      const totalTime = (recipe.prepTime || 0) + (recipe.cookTime || 0)
+      if (timeFilter === 'quick' && totalTime >= 15) return false
+      if (timeFilter === 'medium' && (totalTime < 15 || totalTime > 30)) return false
+      if (timeFilter === 'long' && totalTime <= 30) return false
+    }
+
+    return true
+  })
+
+  const hasActiveFilters = difficultyFilter !== 'all' || timeFilter !== 'all'
+
+  const clearFilters = () => {
+    setDifficultyFilter('all')
+    setTimeFilter('all')
+  }
 
   const handleRefresh = useCallback(async () => {
     if (!household?.id) return
@@ -98,8 +127,73 @@ export default function MyRecipesPage() {
           </button>
         </div>
 
-      {/* Search */}
-      <SearchBar />
+      {/* Search and Filter Toggle */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex-1">
+          <SearchBar />
+        </div>
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className={`p-3 rounded-xl border transition-colors ${
+            hasActiveFilters
+              ? 'bg-orange-100 dark:bg-orange-900/30 border-orange-300 dark:border-orange-700 text-orange-600 dark:text-orange-400'
+              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
+          }`}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Filters */}
+      {showFilters && (
+        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters</span>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="text-sm text-orange-500 hover:text-orange-600"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+          <RecipeFilters
+            difficulty={difficultyFilter}
+            timeFilter={timeFilter}
+            onDifficultyChange={setDifficultyFilter}
+            onTimeFilterChange={setTimeFilter}
+          />
+        </div>
+      )}
+
+      {/* Active Filters Badge */}
+      {hasActiveFilters && !showFilters && (
+        <div className="flex items-center gap-2 mb-4 text-sm text-gray-600 dark:text-gray-400">
+          <span>Filtering by:</span>
+          {difficultyFilter !== 'all' && (
+            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+              difficultyFilter === 'easy'
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                : difficultyFilter === 'medium'
+                ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+            }`}>
+              {difficultyFilter}
+            </span>
+          )}
+          {timeFilter !== 'all' && (
+            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+              {timeFilter === 'quick' ? '<15 min' : timeFilter === 'medium' ? '15-30 min' : '>30 min'}
+            </span>
+          )}
+          <button onClick={clearFilters} className="text-orange-500 hover:text-orange-600 ml-1">
+            &times;
+          </button>
+        </div>
+      )}
 
       {/* Recipe List */}
       {loading ? (
@@ -112,7 +206,15 @@ export default function MyRecipesPage() {
         <EmptyState />
       ) : (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          No recipes match your search
+          <p>No recipes match your {hasActiveFilters ? 'filters' : 'search'}</p>
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="mt-2 text-orange-500 hover:text-orange-600 font-medium"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       )}
 
