@@ -74,7 +74,11 @@ async function seedLibrary() {
           title: recipe.title,
           category: recipe.category,
           ingredients: recipe.ingredients,
-          steps: recipe.steps
+          steps: recipe.steps,
+          servings: recipe.servings || 2,
+          prepTime: recipe.prepTime || null,
+          cookTime: recipe.cookTime || null,
+          difficulty: recipe.difficulty || null
         });
       });
 
