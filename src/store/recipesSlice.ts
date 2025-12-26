@@ -17,6 +17,12 @@ const recipesSlice = createSlice({
       state.items = action.payload;
       state.loading = false;
     },
+    updateRecipe: (state, action: PayloadAction<{ id: string; updates: Partial<SharedRecipe> }>) => {
+      const index = state.items.findIndex(r => r.id === action.payload.id);
+      if (index !== -1) {
+        state.items[index] = { ...state.items[index], ...action.payload.updates };
+      }
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
@@ -30,5 +36,5 @@ const recipesSlice = createSlice({
   },
 });
 
-export const { setRecipes, setLoading, setError, setSearchQuery } = recipesSlice.actions;
+export const { setRecipes, updateRecipe, setLoading, setError, setSearchQuery } = recipesSlice.actions;
 export default recipesSlice.reducer;

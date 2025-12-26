@@ -4,6 +4,7 @@ import { doc, deleteDoc, collection, addDoc, serverTimestamp, updateDoc } from '
 import { db, auth } from '../services/firebase'
 import { useAppSelector, useAppDispatch } from '../store'
 import { showToast } from '../store/uiSlice'
+import { updateRecipe } from '../store/recipesSlice'
 import { scaleIngredients, DEFAULT_SERVINGS } from '../utils/servingScaler'
 import { useWakeLock } from '../hooks/useWakeLock'
 
@@ -187,15 +188,22 @@ export default function RecipeViewPage() {
   }
 
   const toggleFavorite = async () => {
+    const newFavoriteState = !recipe.isFavorite
+
+    // Optimistic update - update UI immediately
+    dispatch(updateRecipe({ id: recipe.id, updates: { isFavorite: newFavoriteState } }))
+
     try {
       await updateDoc(doc(db, 'sharedRecipes', recipe.id), {
-        isFavorite: !recipe.isFavorite
+        isFavorite: newFavoriteState
       })
       dispatch(showToast({
-        message: recipe.isFavorite ? 'Removed from favorites' : 'Added to favorites',
+        message: newFavoriteState ? 'Added to favorites' : 'Removed from favorites',
         type: 'success'
       }))
     } catch (error) {
+      // Revert on error
+      dispatch(updateRecipe({ id: recipe.id, updates: { isFavorite: !newFavoriteState } }))
       dispatch(showToast({ message: 'Failed to update favorite', type: 'error' }))
     }
   }
