@@ -111,6 +111,99 @@
 - [ ] **Feature Tooltips** - Contextual hints for new features
 - [ ] **Smart Empty States** - Actionable empty states with illustrations and CTAs
 
+## Mobile-First HCI Improvements
+
+*Based on established Human-Computer Interaction principles for touch-based interfaces.*
+
+### Fitts's Law (Target Size & Distance)
+*Larger + closer targets = faster interaction. Critical for one-handed phone use.*
+
+- [ ] **Thumb Zone Layout** - Move primary actions (save, next step, check off) to bottom 1/3 of screen where thumb naturally rests
+- [ ] **48dp Minimum Touch Targets** - Ensure all tappable elements meet accessibility minimum (audit current buttons)
+- [ ] **Cooking Mode Large Checkboxes** - 56-64dp checkboxes during cooking (wet/messy hands = less precision)
+- [ ] **Bottom Action Bar** - Move edit/delete/share from top header to bottom of recipe view
+- [ ] **Full-Width Tap Areas** - Entire recipe card tappable, not just title text
+
+### Hick's Law (Reduce Decision Time)
+*Fewer choices = faster decisions. Use progressive disclosure.*
+
+- [ ] **Progressive Disclosure** - Show basic recipe info first, tap to expand details (notes, nutrition, source)
+- [ ] **Contextual Actions Only** - Show relevant actions based on context (no "Mark Cooked" until viewing recipe)
+- [ ] **Smart Defaults** - Pre-fill serving size with last used value, remember sort preference
+- [ ] **Filter Presets** - Quick filters like "Quick Meals (<30 min)", "Easy Recipes" instead of multiple dropdowns
+- [ ] **Focused Cooking Mode** - Strip ALL UI except current step + next/prev buttons
+
+### Miller's Law (Cognitive Chunking)
+*Working memory holds 7±2 items. Group related information.*
+
+- [ ] **Ingredient Grouping** - Chunk ingredients by type (Produce, Dairy, Pantry) or by cooking step
+- [ ] **Step Progress Indicator** - Clear visual: "Step 3 of 7" with progress bar
+- [ ] **Visual Section Dividers** - Clear breaks between ingredients, steps, and notes sections
+- [ ] **Paginated Recipe List** - Show 5-7 recipes before scroll, avoid overwhelming grid views
+
+### Norman's Gulfs (Execution & Evaluation)
+*Make actions discoverable, show clear feedback.*
+
+**Execution (What can I do?):**
+- [ ] **Clear Affordances** - Buttons look tappable (shadows, depth, color contrast)
+- [ ] **Visible Actions** - Don't hide critical functions in overflow menus
+- [ ] **Icon + Label Buttons** - Text labels alongside icons, not icon-only
+
+**Evaluation (What happened?):**
+- [ ] **Immediate Tap Feedback** - Visual/haptic response on every interaction
+- [ ] **State Visibility** - Clear "Saved", "Syncing...", "Offline" indicators
+- [ ] **Action Confirmation** - Toast/snackbar confirming recipe added, deleted, etc.
+
+### Nielsen's Usability Heuristics
+
+- [ ] **System Status** - Loading skeletons, sync indicators, offline badge, progress bars
+- [ ] **Real World Match** - Cooking terminology, familiar recipe card layout, intuitive icons
+- [ ] **User Control & Freedom** - Undo delete action, easy back navigation, cancel mid-edit
+- [ ] **Consistency** - Same gestures work everywhere, uniform button placement across screens
+- [ ] **Error Prevention** - Confirm destructive actions, disable submit until form valid, auto-save drafts
+- [ ] **Recognition Over Recall** - Show recent recipes, visible favorites section, ingredient autocomplete
+- [ ] **Flexibility & Efficiency** - Swipe shortcuts for power users, simple tap path for beginners
+- [ ] **Minimalist Design** - Remove decorative clutter, focus on content, adequate whitespace
+- [ ] **Error Recovery** - "Recipe deleted - Undo" snackbar with 5s window, clear error messages with retry
+- [ ] **Help & Documentation** - Onboarding tips, contextual hints on first use of features
+
+### Cognitive Load Reduction
+
+- [ ] **Single Task Focus** - Cooking mode shows ONE step at a time, nothing else on screen
+- [ ] **Externalized Memory** - Checkboxes persist state so users don't have to remember
+- [ ] **Visual Hierarchy** - Muted colors for secondary info, bold/larger for primary content
+- [ ] **Spatial Consistency** - Navigation and actions always in same screen positions
+
+### Accessibility (WCAG Compliance)
+
+- [ ] **4.5:1 Contrast Ratio** - Ensure text legibility, especially important in bright kitchens
+- [ ] **Respect System Font Size** - Scale text based on device accessibility settings
+- [ ] **Large Text Cooking Mode** - Optional extra-large text mode for recipe steps
+- [ ] **48x48dp Touch Targets** - With minimum 8dp spacing between targets
+- [ ] **Reduce Motion Option** - Respect system "reduce motion" setting, disable animations
+- [ ] **Screen Reader Labels** - Proper ARIA labels on all interactive elements
+
+### Platform-Specific Polish
+
+**iOS:**
+- [ ] **Edge Swipe Back** - Swipe from left edge to navigate back
+- [ ] **Native Pull-to-Refresh** - iOS-style rubber band effect
+- [ ] **Haptic Feedback** - Taptic engine feedback on key actions
+- [ ] **Safe Area Handling** - Proper padding for notch and Dynamic Island
+- [ ] **Large Title Headers** - Collapsing header pattern on scroll
+
+**Android:**
+- [ ] **Material You Theming** - Dynamic colors based on wallpaper (Android 12+)
+- [ ] **Predictive Back Gesture** - Support Android 14+ predictive back
+- [ ] **Edge-to-Edge Content** - Content extends behind system bars
+- [ ] **Back Button Handling** - Proper back stack management
+
+### Quick Access & Shortcuts
+
+- [ ] **Home Screen Widget** - Show "What's cooking?" or recent recipes
+- [ ] **App Icon Quick Actions** - Long-press shortcuts: Add Recipe, Search, Random Recipe
+- [ ] **Recently Viewed Section** - Quick access to last 3-5 viewed recipes on home
+
 ---
 
 ## Completed Features
