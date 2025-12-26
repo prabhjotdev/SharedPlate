@@ -22,6 +22,17 @@
 - [ ] **Recipe Categories/Tags** - Organize recipes (breakfast, dinner, dessert, quick meals, etc.)
 - [x] **Recipe Filtering** - Filter by category, cook time, etc.
 
+## Dietary Preferences & Restrictions
+
+- [ ] **Dietary Profiles** - Pre-defined profiles: Gluten-free, Dairy-free, Nut-free, Vegetarian, Vegan, Shellfish-free, Low-sodium, etc.
+- [ ] **Custom Restrictions** - Add specific ingredients to avoid (e.g., cilantro, spicy foods)
+- [ ] **Library Filtering** - Library page hides or flags recipes containing restricted ingredients (user's choice: hide vs show with warning)
+- [ ] **Smart Ingredient Matching** - Fuzzy matching to handle variations (e.g., "milk" matches "whole milk", "skim milk" but not "coconut milk")
+- [ ] **Restriction Settings Page** - Manage dietary profiles and custom restrictions in Settings
+- [ ] **Per-User Preferences** - Each household member can have their own dietary settings
+
+*Note: My Recipes page is NOT filtered - users are responsible for their own recipes.*
+
 ## Meal Planning
 
 - [ ] **Weekly Meal Planner** - Drag and drop recipes to days of the week
