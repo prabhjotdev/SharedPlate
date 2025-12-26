@@ -11,6 +11,7 @@ import AddRecipePage from './pages/AddRecipePage'
 import EditRecipePage from './pages/EditRecipePage'
 import SettingsPage from './pages/SettingsPage'
 import HouseholdSetupPage from './pages/HouseholdSetupPage'
+import ShoppingListPage from './pages/ShoppingListPage'
 
 // Components
 import Layout from './components/layout/Layout'
@@ -89,6 +90,7 @@ function App() {
             >
               <Route index element={<MyRecipesPage />} />
               <Route path="library" element={<LibraryPage />} />
+              <Route path="shopping" element={<ShoppingListPage />} />
               <Route path="recipe/:id" element={<RecipeViewPage />} />
               <Route path="recipe/:id/edit" element={<EditRecipePage />} />
               <Route path="library/:id" element={<LibraryViewPage />} />

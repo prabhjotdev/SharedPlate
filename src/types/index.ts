@@ -118,10 +118,56 @@ export interface HouseholdState {
   error: string | null;
 }
 
+// Shopping List Types
+
+export type DefaultShoppingCategory =
+  | 'produce'
+  | 'fruits'
+  | 'dairy'
+  | 'meat'
+  | 'bakery'
+  | 'frozen'
+  | 'pantry'
+  | 'beverages'
+  | 'snacks'
+  | 'household'
+  | 'other';
+
+export interface ShoppingItem {
+  id: string;
+  name: string;
+  quantity: string;
+  category: string; // Can be default or custom category
+  isChecked: boolean;
+  isFavorite: boolean;
+  note?: string;
+  addedBy: string;
+  addedByName?: string;
+  householdId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CustomCategory {
+  id: string;
+  name: string;
+  householdId: string;
+  createdBy: string;
+  createdAt: Date;
+}
+
+export interface ShoppingListState {
+  items: ShoppingItem[];
+  customCategories: CustomCategory[];
+  loading: boolean;
+  error: string | null;
+}
+
 export interface RootState {
   auth: AuthState;
   recipes: RecipesState;
   library: LibraryState;
   ui: UIState;
   household: HouseholdState;
+  shopping: ShoppingListState;
 }
