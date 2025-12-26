@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { doc, deleteDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
 import { useAppSelector, useAppDispatch } from '../store'
 import { showToast } from '../store/uiSlice'
 import { scaleIngredients, DEFAULT_SERVINGS } from '../utils/servingScaler'
+import { useWakeLock } from '../hooks/useWakeLock'
 
 export default function RecipeViewPage() {
   const { id } = useParams<{ id: string }>()
@@ -18,6 +19,25 @@ export default function RecipeViewPage() {
   const [servings, setServings] = useState(DEFAULT_SERVINGS)
   const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set())
   const [checkedSteps, setCheckedSteps] = useState<Set<number>>(new Set())
+
+  // Cooking mode state
+  const [cookingMode, setCookingMode] = useState(false)
+  const [currentStepIndex, setCurrentStepIndex] = useState(0)
+
+  // Wake lock for keeping screen on
+  const { isSupported: wakeLockSupported, isActive: wakeLockActive, request: requestWakeLock, release: releaseWakeLock } = useWakeLock()
+
+  // Manage wake lock based on cooking mode
+  useEffect(() => {
+    if (cookingMode && wakeLockSupported) {
+      requestWakeLock()
+    } else {
+      releaseWakeLock()
+    }
+    return () => {
+      releaseWakeLock()
+    }
+  }, [cookingMode, wakeLockSupported, requestWakeLock, releaseWakeLock])
 
   const recipe = items.find((r) => r.id === id)
   const originalServings = recipe?.servings || DEFAULT_SERVINGS
@@ -78,6 +98,42 @@ export default function RecipeViewPage() {
   const allIngredientsChecked = checkedIngredients.size === ingredientsList.length && ingredientsList.length > 0
   const allStepsChecked = checkedSteps.size === stepsList.length && stepsList.length > 0
   const hasAnyChecks = checkedIngredients.size > 0 || checkedSteps.size > 0
+
+  // Cooking mode functions
+  const enterCookingMode = () => {
+    setCookingMode(true)
+    // Start at first unchecked step, or 0 if all checked/none checked
+    const firstUnchecked = stepsList.findIndex((_, i) => !checkedSteps.has(i))
+    setCurrentStepIndex(firstUnchecked >= 0 ? firstUnchecked : 0)
+  }
+
+  const exitCookingMode = () => {
+    setCookingMode(false)
+  }
+
+  const goToNextStep = () => {
+    if (currentStepIndex < stepsList.length - 1) {
+      setCurrentStepIndex(currentStepIndex + 1)
+    }
+  }
+
+  const goToPrevStep = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStepIndex(currentStepIndex - 1)
+    }
+  }
+
+  const markCurrentStepDone = () => {
+    setCheckedSteps(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(currentStepIndex)) {
+        newSet.delete(currentStepIndex)
+      } else {
+        newSet.add(currentStepIndex)
+      }
+      return newSet
+    })
+  }
 
   const handleDelete = async () => {
     setDeleting(true)
@@ -371,7 +427,149 @@ export default function RecipeViewPage() {
             </section>
           </>
         )}
+
+        {/* Spacer for floating button */}
+        <div className="h-20"></div>
       </div>
+
+      {/* Floating Start Cooking Button */}
+      {stepsList.length > 0 && !cookingMode && (
+        <div className="fixed bottom-6 left-0 right-0 px-6 z-40">
+          <button
+            onClick={enterCookingMode}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg flex items-center justify-center gap-3 transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+            </svg>
+            Start Cooking
+          </button>
+        </div>
+      )}
+
+      {/* Cooking Mode Overlay */}
+      {cookingMode && (
+        <div className="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col">
+          {/* Cooking Mode Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <button
+              onClick={exitCookingMode}
+              className="p-2 -ml-2 flex items-center gap-2 text-gray-600 dark:text-gray-300"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span className="text-sm font-medium">Exit</span>
+            </button>
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Step {currentStepIndex + 1} of {stepsList.length}
+              </p>
+              {wakeLockActive && (
+                <p className="text-xs text-green-500 flex items-center justify-center gap-1">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Screen stays on
+                </p>
+              )}
+            </div>
+            <div className="w-16"></div> {/* Spacer for centering */}
+          </div>
+
+          {/* Progress Bar */}
+          <div className="h-1 bg-gray-200 dark:bg-gray-700">
+            <div
+              className="h-full bg-orange-500 transition-all duration-300"
+              style={{ width: `${((currentStepIndex + 1) / stepsList.length) * 100}%` }}
+            ></div>
+          </div>
+
+          {/* Step Content */}
+          <div className="flex-1 flex flex-col justify-center p-8 overflow-y-auto">
+            <div className="max-w-2xl mx-auto w-full">
+              <p className="text-3xl md:text-4xl leading-relaxed text-gray-900 dark:text-white font-medium text-center">
+                {stepsList[currentStepIndex]}
+              </p>
+            </div>
+          </div>
+
+          {/* Step Done Checkbox */}
+          <div className="px-8 pb-4">
+            <label className="flex items-center justify-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={checkedSteps.has(currentStepIndex)}
+                onChange={markCurrentStepDone}
+                className="w-7 h-7 rounded border-gray-300 dark:border-gray-600 text-orange-500 focus:ring-orange-500 dark:bg-gray-700 cursor-pointer"
+              />
+              <span className={`text-lg ${
+                checkedSteps.has(currentStepIndex)
+                  ? 'text-green-500 font-medium'
+                  : 'text-gray-600 dark:text-gray-400'
+              }`}>
+                {checkedSteps.has(currentStepIndex) ? 'Step completed!' : 'Mark as done'}
+              </span>
+            </label>
+          </div>
+
+          {/* Navigation Buttons */}
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex gap-4 max-w-2xl mx-auto">
+              <button
+                onClick={goToPrevStep}
+                disabled={currentStepIndex === 0}
+                className="flex-1 py-4 px-6 rounded-2xl font-semibold text-lg border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Previous
+              </button>
+              {currentStepIndex < stepsList.length - 1 ? (
+                <button
+                  onClick={goToNextStep}
+                  className="flex-1 py-4 px-6 rounded-2xl font-semibold text-lg bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2 transition-colors"
+                >
+                  Next
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  onClick={exitCookingMode}
+                  className="flex-1 py-4 px-6 rounded-2xl font-semibold text-lg bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Done!
+                </button>
+              )}
+            </div>
+
+            {/* Step Dots */}
+            <div className="flex justify-center gap-2 mt-6">
+              {stepsList.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentStepIndex(index)}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    index === currentStepIndex
+                      ? 'bg-orange-500 w-6'
+                      : checkedSteps.has(index)
+                      ? 'bg-green-500'
+                      : 'bg-gray-300 dark:bg-gray-600'
+                  }`}
+                  aria-label={`Go to step ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Modal */}
       {showDeleteModal && (
