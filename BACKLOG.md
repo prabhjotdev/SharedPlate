@@ -11,7 +11,8 @@
 
 - [x] **Ingredient Checkboxes** - Check off ingredients while cooking
 - [x] **Step Checkboxes** - Check off steps as you go
-- [ ] **Keep Screen Awake** - Prevent screen timeout while cooking
+- [x] **Keep Screen Awake** - Prevent screen timeout while cooking
+- [x] **Step-by-Step Cooking Mode** - Large text, swipe through steps hands-free
 - [ ] **Copy as Text** - Share recipe via text/message
 
 ## Organization
@@ -47,7 +48,7 @@
 ## Media & Presentation
 
 - [ ] **Recipe Photos** - Upload images for recipes
-- [ ] **Step-by-Step Cooking Mode** - Large text, swipe through steps hands-free
+- [x] **Step-by-Step Cooking Mode** - Large text, swipe through steps hands-free
 - [ ] **Cooking Timers** - Built-in timers for each step
 
 ## Import & Export
@@ -225,3 +226,5 @@
 - [x] Recipe filtering (by difficulty, cook time)
 - [x] Recipe sorting (newest, oldest, name A-Z/Z-A)
 - [x] Ingredient and step checkboxes while cooking
+- [x] Keep screen awake during cooking mode
+- [x] Step-by-step focused cooking mode
