@@ -40,8 +40,9 @@
 
 ## Shopping & Pantry
 
-- [ ] **Shopping List** - Auto-generate from selected recipes
-- [ ] **Shared Shopping List** - Household members can check off items in real-time
+- [x] **Shopping List** - Add items manually with categories, quantities, notes, and favorites
+- [x] **Shared Shopping List** - Household members can check off items in real-time
+- [x] **Add from Recipe** - Add recipe ingredients to shopping list with one tap
 - [ ] **Pantry Tracking** - Track what ingredients you have at home
 - [ ] **Smart Suggestions** - Suggest recipes based on pantry items
 
@@ -230,3 +231,6 @@
 - [x] Step-by-step focused cooking mode
 - [x] Favorite/star recipes with quick filter
 - [x] Copy recipe as text to clipboard
+- [x] Shopping list with categories, quantities, notes, and favorites
+- [x] Shared shopping list (real-time sync across household)
+- [x] Add recipe ingredients to shopping list

@@ -7,6 +7,7 @@ import { showToast } from '../store/uiSlice'
 import { updateRecipe } from '../store/recipesSlice'
 import { scaleIngredients, DEFAULT_SERVINGS } from '../utils/servingScaler'
 import { useWakeLock } from '../hooks/useWakeLock'
+import { addRecipeIngredientsToShoppingList } from '../services/shoppingService'
 
 export default function RecipeViewPage() {
   const { id } = useParams<{ id: string }>()
@@ -17,6 +18,7 @@ export default function RecipeViewPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [duplicating, setDuplicating] = useState(false)
+  const [addingToShopping, setAddingToShopping] = useState(false)
   const [servings, setServings] = useState(DEFAULT_SERVINGS)
   const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set())
   const [checkedSteps, setCheckedSteps] = useState<Set<number>>(new Set())
@@ -244,6 +246,33 @@ export default function RecipeViewPage() {
     }
   }
 
+  const addToShoppingList = async () => {
+    if (!recipe || !household?.id || !auth.currentUser) return
+    setAddingToShopping(true)
+    try {
+      // Use scaled ingredients if serving size changed
+      const ingredientsToAdd = servings !== originalServings
+        ? scaledIngredients.split('\n').filter(line => line.trim())
+        : ingredientsList
+
+      await addRecipeIngredientsToShoppingList(
+        ingredientsToAdd,
+        household.id,
+        auth.currentUser.uid,
+        auth.currentUser.displayName || auth.currentUser.email || undefined
+      )
+      dispatch(showToast({
+        message: `Added ${ingredientsToAdd.length} items to shopping list!`,
+        type: 'success'
+      }))
+    } catch (error) {
+      console.error('Failed to add to shopping list:', error)
+      dispatch(showToast({ message: 'Failed to add to shopping list', type: 'error' }))
+    } finally {
+      setAddingToShopping(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
@@ -278,6 +307,17 @@ export default function RecipeViewPage() {
           >
             <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+            </svg>
+          </button>
+          {/* Add to shopping list button */}
+          <button
+            onClick={addToShoppingList}
+            disabled={addingToShopping}
+            className="p-2 disabled:opacity-50"
+            title="Add ingredients to shopping list"
+          >
+            <svg className={`w-6 h-6 ${addingToShopping ? 'text-orange-500' : 'text-gray-600 dark:text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </button>
           <button
