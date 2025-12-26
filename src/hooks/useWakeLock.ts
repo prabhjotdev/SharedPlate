@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 interface WakeLockState {
   isSupported: boolean
@@ -8,22 +8,22 @@ interface WakeLockState {
 }
 
 export function useWakeLock(): WakeLockState {
-  const [wakeLock, setWakeLock] = useState<WakeLockSentinel | null>(null)
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null)
   const [isActive, setIsActive] = useState(false)
 
   const isSupported = 'wakeLock' in navigator
 
   const request = useCallback(async () => {
-    if (!isSupported) return
+    if (!isSupported || wakeLockRef.current) return
 
     try {
       const lock = await navigator.wakeLock.request('screen')
-      setWakeLock(lock)
+      wakeLockRef.current = lock
       setIsActive(true)
 
       lock.addEventListener('release', () => {
         setIsActive(false)
-        setWakeLock(null)
+        wakeLockRef.current = null
       })
     } catch (err) {
       // Wake lock request failed (e.g., low battery, tab not visible)
@@ -32,18 +32,31 @@ export function useWakeLock(): WakeLockState {
   }, [isSupported])
 
   const release = useCallback(async () => {
-    if (wakeLock) {
-      await wakeLock.release()
-      setWakeLock(null)
+    if (wakeLockRef.current) {
+      try {
+        await wakeLockRef.current.release()
+      } catch (err) {
+        // Ignore errors on release
+      }
+      wakeLockRef.current = null
       setIsActive(false)
     }
-  }, [wakeLock])
+  }, [])
 
   // Re-acquire wake lock when page becomes visible again
   useEffect(() => {
     const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'visible' && isActive && !wakeLock) {
-        await request()
+      if (document.visibilityState === 'visible' && isActive && !wakeLockRef.current) {
+        try {
+          const lock = await navigator.wakeLock.request('screen')
+          wakeLockRef.current = lock
+          lock.addEventListener('release', () => {
+            setIsActive(false)
+            wakeLockRef.current = null
+          })
+        } catch (err) {
+          console.log('Wake Lock re-acquire failed:', err)
+        }
       }
     }
 
@@ -51,16 +64,17 @@ export function useWakeLock(): WakeLockState {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [isActive, wakeLock, request])
+  }, [isActive])
 
   // Clean up on unmount
   useEffect(() => {
     return () => {
-      if (wakeLock) {
-        wakeLock.release()
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release().catch(() => {})
+        wakeLockRef.current = null
       }
     }
-  }, [wakeLock])
+  }, [])
 
   return { isSupported, isActive, request, release }
 }

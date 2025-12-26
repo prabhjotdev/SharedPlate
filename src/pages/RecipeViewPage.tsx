@@ -37,7 +37,8 @@ export default function RecipeViewPage() {
     return () => {
       releaseWakeLock()
     }
-  }, [cookingMode, wakeLockSupported, requestWakeLock, releaseWakeLock])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookingMode])
 
   const recipe = items.find((r) => r.id === id)
   const originalServings = recipe?.servings || DEFAULT_SERVINGS
