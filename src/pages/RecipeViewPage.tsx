@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { doc, deleteDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, deleteDoc, collection, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
 import { useAppSelector, useAppDispatch } from '../store'
 import { showToast } from '../store/uiSlice'
@@ -186,6 +186,56 @@ export default function RecipeViewPage() {
     }
   }
 
+  const toggleFavorite = async () => {
+    try {
+      await updateDoc(doc(db, 'sharedRecipes', recipe.id), {
+        isFavorite: !recipe.isFavorite
+      })
+      dispatch(showToast({
+        message: recipe.isFavorite ? 'Removed from favorites' : 'Added to favorites',
+        type: 'success'
+      }))
+    } catch (error) {
+      dispatch(showToast({ message: 'Failed to update favorite', type: 'error' }))
+    }
+  }
+
+  const copyAsText = async () => {
+    // Format recipe as plain text
+    let text = `${recipe.title}\n\n`
+
+    if (recipe.prepTime || recipe.cookTime) {
+      if (recipe.prepTime) text += `Prep: ${recipe.prepTime} min`
+      if (recipe.prepTime && recipe.cookTime) text += ' | '
+      if (recipe.cookTime) text += `Cook: ${recipe.cookTime} min`
+      text += '\n'
+    }
+    if (recipe.servings) {
+      text += `Servings: ${recipe.servings}\n`
+    }
+    if (recipe.difficulty) {
+      text += `Difficulty: ${recipe.difficulty}\n`
+    }
+
+    text += '\n--- INGREDIENTS ---\n'
+    text += recipe.ingredients + '\n'
+
+    text += '\n--- STEPS ---\n'
+    text += recipe.steps + '\n'
+
+    if (recipe.notes) {
+      text += '\n--- NOTES ---\n'
+      text += recipe.notes + '\n'
+    }
+
+    try {
+      await navigator.clipboard.writeText(text)
+      dispatch(showToast({ message: 'Recipe copied to clipboard!', type: 'success' }))
+    } catch (error) {
+      dispatch(showToast({ message: 'Failed to copy recipe', type: 'error' }))
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
@@ -196,6 +246,32 @@ export default function RecipeViewPage() {
           </svg>
         </button>
         <div className="flex gap-1">
+          {/* Favorite button */}
+          <button
+            onClick={toggleFavorite}
+            className="p-2"
+            title={recipe.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            {recipe.isFavorite ? (
+              <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            )}
+          </button>
+          {/* Copy as text button */}
+          <button
+            onClick={copyAsText}
+            className="p-2"
+            title="Copy recipe as text"
+          >
+            <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+            </svg>
+          </button>
           <button
             onClick={handleDuplicate}
             disabled={duplicating}

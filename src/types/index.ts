@@ -21,6 +21,7 @@ export interface SharedRecipe {
   prepTime?: number; // in minutes
   cookTime?: number; // in minutes
   difficulty?: Difficulty;
+  isFavorite?: boolean;
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
