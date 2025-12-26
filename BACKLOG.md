@@ -13,12 +13,12 @@
 - [x] **Step Checkboxes** - Check off steps as you go
 - [x] **Keep Screen Awake** - Prevent screen timeout while cooking
 - [x] **Step-by-Step Cooking Mode** - Large text, swipe through steps hands-free
-- [ ] **Copy as Text** - Share recipe via text/message
+- [x] **Copy as Text** - Share recipe via text/message
 
 ## Organization
 
 - [x] **Sort Recipes** - By name, date added, last cooked
-- [ ] **Favorite/Star Recipes** - Quick access to top recipes
+- [x] **Favorite/Star Recipes** - Quick access to top recipes
 - [ ] **Last Cooked Date** - Track when you made it
 - [ ] **Recipe Categories/Tags** - Organize recipes (breakfast, dinner, dessert, quick meals, etc.)
 - [x] **Recipe Filtering** - Filter by category, cook time, etc.
@@ -228,3 +228,5 @@
 - [x] Ingredient and step checkboxes while cooking
 - [x] Keep screen awake during cooking mode
 - [x] Step-by-step focused cooking mode
+- [x] Favorite/star recipes with quick filter
+- [x] Copy recipe as text to clipboard

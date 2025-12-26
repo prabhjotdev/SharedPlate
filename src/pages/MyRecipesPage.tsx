@@ -19,6 +19,7 @@ export default function MyRecipesPage() {
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | 'all'>('all')
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all')
   const [sortBy, setSortBy] = useState<SortOption>('newest')
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
 
   useEffect(() => {
     if (!household?.id) {
@@ -48,11 +49,16 @@ export default function MyRecipesPage() {
     return () => unsubscribe()
   }, [dispatch, household?.id])
 
-  // Filter recipes by search query, difficulty, and time
+  // Filter recipes by search query, difficulty, time, and favorites
   const filteredRecipes = items
     .filter((recipe) => {
       // Search filter
       if (!recipe.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false
+      }
+
+      // Favorites filter
+      if (favoritesOnly && !recipe.isFavorite) {
         return false
       }
 
@@ -86,12 +92,16 @@ export default function MyRecipesPage() {
       }
     })
 
-  const hasActiveFilters = difficultyFilter !== 'all' || timeFilter !== 'all'
+  const hasActiveFilters = difficultyFilter !== 'all' || timeFilter !== 'all' || favoritesOnly
 
   const clearFilters = () => {
     setDifficultyFilter('all')
     setTimeFilter('all')
+    setFavoritesOnly(false)
   }
+
+  // Count favorites
+  const favoritesCount = items.filter(r => r.isFavorite).length
 
   const handleRefresh = useCallback(async () => {
     if (!household?.id) return
@@ -143,6 +153,23 @@ export default function MyRecipesPage() {
           </button>
         </div>
 
+      {/* Favorites Quick Filter */}
+      {favoritesCount > 0 && (
+        <button
+          onClick={() => setFavoritesOnly(!favoritesOnly)}
+          className={`mb-4 px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${
+            favoritesOnly
+              ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
+          }`}
+        >
+          <svg className={`w-4 h-4 ${favoritesOnly ? 'text-red-500' : ''}`} fill={favoritesOnly ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          Favorites ({favoritesCount})
+        </button>
+      )}
+
       {/* Search and Filter Toggle */}
       <div className="flex items-stretch gap-2 mb-4">
         <div className="flex-1">
@@ -151,7 +178,7 @@ export default function MyRecipesPage() {
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={`px-3 rounded-xl border transition-colors flex items-center justify-center ${
-            hasActiveFilters
+            hasActiveFilters && !favoritesOnly
               ? 'bg-orange-100 dark:bg-orange-900/30 border-orange-300 dark:border-orange-700 text-orange-600 dark:text-orange-400'
               : 'bg-gray-100 dark:bg-gray-800 border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400'
           }`}
