@@ -555,12 +555,12 @@ export default function RecipeViewPage() {
         )}
 
         {/* Spacer for floating button */}
-        <div className="h-20"></div>
+        <div className="h-32"></div>
       </div>
 
       {/* Floating Start Cooking Button */}
       {stepsList.length > 0 && !cookingMode && (
-        <div className="fixed bottom-6 left-0 right-0 px-6 z-40">
+        <div className="fixed bottom-24 left-0 right-0 px-6 z-40">
           <button
             onClick={enterCookingMode}
             className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg flex items-center justify-center gap-3 transition-colors"
