@@ -163,6 +163,25 @@ export interface ShoppingListState {
   error: string | null;
 }
 
+// Library Categories Types (Dietary Filter)
+
+export interface DietaryFilter {
+  id: string;
+  name: string;
+  blockedIngredients: string[]; // Ingredients to AVOID
+  householdId: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LibraryCategoryState {
+  dietaryFilters: DietaryFilter[];
+  activeDietaryFilterId: string | null;
+  loading: boolean;
+  error: string | null;
+}
+
 export interface RootState {
   auth: AuthState;
   recipes: RecipesState;
@@ -170,4 +189,5 @@ export interface RootState {
   ui: UIState;
   household: HouseholdState;
   shopping: ShoppingListState;
+  libraryCategories: LibraryCategoryState;
 }

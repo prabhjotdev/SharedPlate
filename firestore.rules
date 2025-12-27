@@ -52,6 +52,13 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated();
     }
 
+    // Dietary filters collection (ingredients to avoid)
+    match /dietaryFilters/{filterId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated();
+    }
+
     // Allowed users collection (for email allowlist)
     match /allowedUsers/{email} {
       allow read: if isAuthenticated();

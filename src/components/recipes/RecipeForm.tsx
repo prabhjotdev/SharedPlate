@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { DEFAULT_SERVINGS } from '../../utils/servingScaler'
+import { useDietaryFilters } from '../../hooks/useDietaryFilters'
 import type { Difficulty } from '../../types'
 
 interface RecipeFormProps {
@@ -42,6 +43,15 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
   const [prepTime, setPrepTime] = useState<string>(initialData?.prepTime?.toString() || '')
   const [cookTime, setCookTime] = useState<string>(initialData?.cookTime?.toString() || '')
   const [difficulty, setDifficulty] = useState<Difficulty | null>(initialData?.difficulty || null)
+
+  // Get dietary filter info
+  const { activeFilter, getBlockedIngredientsInRecipe } = useDietaryFilters()
+
+  // Check for blocked ingredients in real-time
+  const blockedIngredientsFound = useMemo(() => {
+    if (!activeFilter || !ingredients.trim()) return []
+    return getBlockedIngredientsInRecipe(ingredients)
+  }, [activeFilter, ingredients, getBlockedIngredientsInRecipe])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -178,9 +188,40 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
           placeholder="Enter each ingredient on a new line..."
-          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none min-h-[150px] resize-y bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none min-h-[150px] resize-y bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+            blockedIngredientsFound.length > 0
+              ? 'border-red-300 dark:border-red-700'
+              : 'border-gray-300 dark:border-gray-600'
+          }`}
           required
         />
+        {/* Dietary Filter Warning */}
+        {blockedIngredientsFound.length > 0 && (
+          <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <div className="flex items-start gap-2">
+              <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                  Dietary Filter Warning ({activeFilter?.name})
+                </p>
+                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                  Contains restricted ingredients: <span className="font-medium">{blockedIngredientsFound.join(', ')}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Active Filter Indicator */}
+        {activeFilter && blockedIngredientsFound.length === 0 && ingredients.trim() && (
+          <div className="mt-2 flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            No restricted ingredients detected
+          </div>
+        )}
       </div>
 
       <div>
