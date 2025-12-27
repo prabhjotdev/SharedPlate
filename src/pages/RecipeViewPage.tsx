@@ -71,6 +71,13 @@ export default function RecipeViewPage() {
     [recipe.steps]
   )
 
+  // Helper to get member name from uid
+  const getMemberName = (uid: string): string | null => {
+    if (!household?.members) return null
+    const member = household.members.find(m => m.uid === uid)
+    return member?.displayName || member?.email?.split('@')[0] || null
+  }
+
   const toggleIngredient = (index: number) => {
     setCheckedIngredients(prev => {
       const newSet = new Set(prev)
@@ -364,7 +371,7 @@ export default function RecipeViewPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{recipe.title}</h1>
 
         {/* Recipe Meta Info */}
-        {(recipe.prepTime || recipe.cookTime || recipe.difficulty) && (
+        {(recipe.prepTime || recipe.cookTime || recipe.difficulty || recipe.createdBy) && (
           <div className="flex flex-wrap gap-4 mb-4">
             {recipe.prepTime && (
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
@@ -405,6 +412,15 @@ export default function RecipeViewPage() {
               >
                 {recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1)}
               </span>
+            )}
+            {/* Author */}
+            {recipe.createdBy && getMemberName(recipe.createdBy) && (
+              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span className="text-sm">by {getMemberName(recipe.createdBy)}</span>
+              </div>
             )}
           </div>
         )}
