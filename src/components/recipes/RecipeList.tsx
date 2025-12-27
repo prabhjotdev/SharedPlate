@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '../../services/firebase'
+import { useAppSelector } from '../../store'
 import type { SharedRecipe } from '../../types'
 
 interface RecipeListProps {
@@ -8,6 +9,15 @@ interface RecipeListProps {
 }
 
 export default function RecipeList({ recipes }: RecipeListProps) {
+  const { household } = useAppSelector((state) => state.household)
+
+  // Helper to get member name from uid
+  const getMemberName = (uid: string): string | null => {
+    if (!household?.members) return null
+    const member = household.members.find(m => m.uid === uid)
+    return member?.displayName || member?.email?.split('@')[0] || null
+  }
+
   const toggleFavorite = async (e: React.MouseEvent, recipe: SharedRecipe) => {
     e.preventDefault() // Prevent navigation when clicking favorite
     e.stopPropagation()
@@ -51,6 +61,15 @@ export default function RecipeList({ recipes }: RecipeListProps) {
                       : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                   }`}>
                     {recipe.difficulty}
+                  </span>
+                )}
+                {/* Author */}
+                {recipe.createdBy && getMemberName(recipe.createdBy) && (
+                  <span className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    {getMemberName(recipe.createdBy)}
                   </span>
                 )}
               </div>
