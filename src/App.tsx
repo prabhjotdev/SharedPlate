@@ -13,6 +13,7 @@ import SettingsPage from './pages/SettingsPage'
 import HouseholdSetupPage from './pages/HouseholdSetupPage'
 import ShoppingListPage from './pages/ShoppingListPage'
 import DietaryFiltersPage from './pages/DietaryFiltersPage'
+import MealPlannerPage from './pages/MealPlannerPage'
 
 // Components
 import Layout from './components/layout/Layout'
@@ -117,6 +118,18 @@ function App() {
                 <ProtectedRoute>
                   <HouseholdRoute>
                     <DietaryFiltersPage />
+                  </HouseholdRoute>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Meal Planner */}
+            <Route
+              path="/meal-planner"
+              element={
+                <ProtectedRoute>
+                  <HouseholdRoute>
+                    <MealPlannerPage />
                   </HouseholdRoute>
                 </ProtectedRoute>
               }
