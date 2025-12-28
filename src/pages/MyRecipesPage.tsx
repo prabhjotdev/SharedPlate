@@ -1,9 +1,10 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { collection, onSnapshot, orderBy, query, where, getDocs } from 'firebase/firestore'
 import { db } from '../services/firebase'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setRecipes, setLoading } from '../store/recipesSlice'
+import { useDietaryFilters } from '../hooks/useDietaryFilters'
 import type { SharedRecipe, Difficulty } from '../types'
 import SearchBar from '../components/recipes/SearchBar'
 import RecipeList from '../components/recipes/RecipeList'
@@ -14,6 +15,7 @@ export default function MyRecipesPage() {
   const dispatch = useAppDispatch()
   const { items, loading, searchQuery } = useAppSelector((state) => state.recipes)
   const { household } = useAppSelector((state) => state.household)
+  const { activeFilter, getBlockedIngredientsInRecipe } = useDietaryFilters()
   const [refreshing, setRefreshing] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | 'all'>('all')
@@ -103,6 +105,15 @@ export default function MyRecipesPage() {
   // Count favorites
   const favoritesCount = items.filter(r => r.isFavorite).length
 
+  // Count blocked recipes for dietary filter
+  const blockedRecipesCount = useMemo(() => {
+    if (!activeFilter) return 0
+    return items.filter(recipe => {
+      const blocked = getBlockedIngredientsInRecipe(recipe.ingredients)
+      return blocked.length > 0
+    }).length
+  }, [activeFilter, items, getBlockedIngredientsInRecipe])
+
   const handleRefresh = useCallback(async () => {
     if (!household?.id) return
     setRefreshing(true)
@@ -152,6 +163,21 @@ export default function MyRecipesPage() {
             </svg>
           </button>
         </div>
+
+      {/* Active Dietary Filter Banner */}
+      {activeFilter && (
+        <div className="mb-4 flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-full text-red-700 dark:text-red-400">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span className="font-medium">{activeFilter.name}</span>
+            {blockedRecipesCount > 0 && (
+              <span className="text-red-500 dark:text-red-500">({blockedRecipesCount} flagged)</span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Favorites Quick Filter */}
       {favoritesCount > 0 && (

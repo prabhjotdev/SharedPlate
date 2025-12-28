@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { collection, getDocs } from 'firebase/firestore'
+import { Link } from 'react-router-dom'
 import { db } from '../services/firebase'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setLibraryRecipes, setLoading, setSelectedCategory } from '../store/librarySlice'
+import { useDietaryFilters } from '../hooks/useDietaryFilters'
 import type { LibraryRecipe, Category, Difficulty } from '../types'
 import CategoryTabs from '../components/library/CategoryTabs'
-import RecipeGrid from '../components/library/RecipeGrid'
 
 type TimeFilter = 'all' | 'quick' | 'medium' | 'long'
 type SortOption = 'name-asc' | 'name-desc' | 'time-asc' | 'time-desc'
@@ -44,11 +45,13 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 export default function LibraryPage() {
   const dispatch = useAppDispatch()
   const { items, loading, selectedCategory } = useAppSelector((state) => state.library)
+  const { activeFilter, getBlockedIngredientsInRecipe } = useDietaryFilters()
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilters, setShowFilters] = useState(false)
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | 'all'>('all')
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all')
   const [sortBy, setSortBy] = useState<SortOption>('name-asc')
+  const [hideBlockedRecipes, setHideBlockedRecipes] = useState(false)
 
   useEffect(() => {
     const fetchLibrary = async () => {
@@ -75,12 +78,26 @@ export default function LibraryPage() {
     dispatch(setSelectedCategory(category))
   }
 
-  const hasActiveFilters = difficultyFilter !== 'all' || timeFilter !== 'all'
+  const hasActiveFilters = difficultyFilter !== 'all' || timeFilter !== 'all' || hideBlockedRecipes
 
   const clearFilters = () => {
     setDifficultyFilter('all')
     setTimeFilter('all')
+    setHideBlockedRecipes(false)
   }
+
+  // Build a map of recipe IDs to their blocked ingredients
+  const blockedRecipesMap = useMemo(() => {
+    if (!activeFilter) return new Map<string, string[]>()
+    const map = new Map<string, string[]>()
+    items.forEach((recipe) => {
+      const blocked = getBlockedIngredientsInRecipe(recipe.ingredients)
+      if (blocked.length > 0) {
+        map.set(recipe.id, blocked)
+      }
+    })
+    return map
+  }, [activeFilter, items, getBlockedIngredientsInRecipe])
 
   // Filter and sort recipes
   const filteredRecipes = items
@@ -106,6 +123,11 @@ export default function LibraryPage() {
         if (timeFilter === 'quick' && totalTime >= 15) return false
         if (timeFilter === 'medium' && (totalTime < 15 || totalTime > 30)) return false
         if (timeFilter === 'long' && totalTime <= 30) return false
+      }
+
+      // Dietary filter - hide blocked recipes if toggle is on
+      if (hideBlockedRecipes && blockedRecipesMap.has(recipe.id)) {
+        return false
       }
 
       return true
@@ -254,6 +276,25 @@ export default function LibraryPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Dietary Filter Toggle */}
+              {activeFilter && (
+                <div>
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 block">
+                    Dietary Filter: {activeFilter.name}
+                  </label>
+                  <button
+                    onClick={() => setHideBlockedRecipes(!hideBlockedRecipes)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      hideBlockedRecipes
+                        ? 'bg-red-500 text-white'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {hideBlockedRecipes ? 'Hiding restricted' : 'Show all (restricted visible)'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -278,9 +319,27 @@ export default function LibraryPage() {
                 {timeFilter === 'quick' ? '<15 min' : timeFilter === 'medium' ? '15-30 min' : '>30 min'}
               </span>
             )}
+            {hideBlockedRecipes && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                Hiding restricted
+              </span>
+            )}
             <button onClick={clearFilters} className="text-orange-500 hover:text-orange-600 ml-1">
               &times;
             </button>
+          </div>
+        )}
+
+        {/* Active Dietary Filter Banner */}
+        {activeFilter && !showFilters && (
+          <div className="mt-3 flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-full text-red-700 dark:text-red-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span className="font-medium">{activeFilter.name}</span>
+              <span className="text-red-500 dark:text-red-500">({blockedRecipesMap.size} flagged)</span>
+            </div>
           </div>
         )}
       </div>
@@ -305,7 +364,44 @@ export default function LibraryPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
         </div>
       ) : filteredRecipes.length > 0 ? (
-        <RecipeGrid recipes={filteredRecipes} />
+        <div className="grid grid-cols-2 gap-3 p-4">
+          {filteredRecipes.map((recipe) => {
+            const blockedIngredients = blockedRecipesMap.get(recipe.id)
+            const isBlocked = !!blockedIngredients
+
+            return (
+              <Link
+                key={recipe.id}
+                to={`/library/${recipe.id}`}
+                className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow relative ${
+                  isBlocked ? 'ring-2 ring-red-300 dark:ring-red-700' : ''
+                }`}
+              >
+                {/* Warning Badge */}
+                {isBlocked && (
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01" />
+                    </svg>
+                  </div>
+                )}
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2 line-clamp-2">{recipe.title}</h3>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {recipe.category}
+                </span>
+                {/* Blocked Ingredients Preview */}
+                {isBlocked && (
+                  <div className="mt-2 pt-2 border-t border-red-100 dark:border-red-900">
+                    <p className="text-xs text-red-600 dark:text-red-400">
+                      Contains: {blockedIngredients.slice(0, 2).join(', ')}
+                      {blockedIngredients.length > 2 && ` +${blockedIngredients.length - 2}`}
+                    </p>
+                  </div>
+                )}
+              </Link>
+            )
+          })}
+        </div>
       ) : (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400 px-4">
           <p>No recipes match your search</p>
