@@ -193,6 +193,21 @@ export interface LibraryCategoryState {
   error: string | null;
 }
 
+// Meal Planner Types
+
+export type MealSlot = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
+export interface MealPlanItem {
+  id: string;
+  recipeId: string;
+  recipeTitle: string;
+  date: string; // ISO date string YYYY-MM-DD
+  mealSlot: MealSlot;
+  householdId: string;
+  addedBy: string;
+  createdAt: Date;
+}
+
 export interface RootState {
   auth: AuthState;
   recipes: RecipesState;
