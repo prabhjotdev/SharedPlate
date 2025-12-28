@@ -72,7 +72,9 @@ export default function DietaryFiltersPage() {
       }
       setShowAddModal(false)
     } catch (error) {
-      dispatch(showToast({ message: 'Failed to save filter', type: 'error' }))
+      const message = error instanceof Error ? error.message : 'Failed to save filter'
+      dispatch(showToast({ message, type: 'error' }))
+      console.error('Error saving dietary filter:', error)
     }
   }
 

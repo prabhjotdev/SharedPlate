@@ -25,16 +25,24 @@ export function useDietaryFilters() {
       where('householdId', '==', household.id)
     );
 
-    const unsubscribe = onSnapshot(filtersQuery, (snapshot) => {
-      const filters: DietaryFilter[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate(),
-        updatedAt: doc.data().updatedAt?.toDate(),
-      })) as DietaryFilter[];
+    const unsubscribe = onSnapshot(
+      filtersQuery,
+      (snapshot) => {
+        const filters: DietaryFilter[] = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt?.toDate(),
+          updatedAt: doc.data().updatedAt?.toDate(),
+        })) as DietaryFilter[];
 
-      dispatch(setDietaryFilters(filters));
-    });
+        dispatch(setDietaryFilters(filters));
+        dispatch(setLoading(false));
+      },
+      (error) => {
+        console.error('Error fetching dietary filters:', error);
+        dispatch(setLoading(false));
+      }
+    );
 
     return () => unsubscribe();
   }, [dispatch, household?.id]);
@@ -44,7 +52,12 @@ export function useDietaryFilters() {
 
   // Add a new dietary filter
   const addFilter = async (name: string, blockedIngredients: string[]) => {
-    if (!household?.id || !user?.uid) return;
+    if (!household?.id) {
+      throw new Error('No household selected. Please join or create a household first.');
+    }
+    if (!user?.uid) {
+      throw new Error('You must be logged in to create a filter.');
+    }
 
     await addDoc(collection(db, 'dietaryFilters'), {
       name,

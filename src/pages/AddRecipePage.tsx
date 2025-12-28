@@ -22,6 +22,7 @@ export default function AddRecipePage() {
     prepTime: number | null
     cookTime: number | null
     difficulty: Difficulty | null
+    category: string | null
   }) => {
     setSaving(true)
     try {
@@ -34,6 +35,7 @@ export default function AddRecipePage() {
         prepTime: data.prepTime,
         cookTime: data.cookTime,
         difficulty: data.difficulty,
+        category: data.category,
         createdBy: auth.currentUser?.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),

@@ -21,6 +21,7 @@ export interface SharedRecipe {
   prepTime?: number; // in minutes
   cookTime?: number; // in minutes
   difficulty?: Difficulty;
+  category?: string; // Custom category ID or default category name
   isFavorite?: boolean;
   createdBy: string;
   createdAt: Date;
@@ -161,6 +162,16 @@ export interface ShoppingListState {
   customCategories: CustomCategory[];
   loading: boolean;
   error: string | null;
+}
+
+// Recipe Categories Types (Custom categories for filtering)
+
+export interface RecipeCategory {
+  id: string;
+  name: string;
+  householdId: string;
+  createdBy: string;
+  createdAt: Date;
 }
 
 // Library Categories Types (Dietary Filter)
