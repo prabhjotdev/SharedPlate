@@ -5,21 +5,12 @@ import { db } from '../services/firebase'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setLibraryRecipes, setLoading, setSelectedCategory } from '../store/librarySlice'
 import { useDietaryFilters } from '../hooks/useDietaryFilters'
-import type { LibraryRecipe, Category, Difficulty } from '../types'
+import { useRecipeCategories, DEFAULT_RECIPE_CATEGORIES } from '../hooks/useRecipeCategories'
+import type { LibraryRecipe, Difficulty } from '../types'
 import CategoryTabs from '../components/library/CategoryTabs'
 
 type TimeFilter = 'all' | 'quick' | 'medium' | 'long'
 type SortOption = 'name-asc' | 'name-desc' | 'time-asc' | 'time-desc'
-
-const categories: { value: Category | 'all'; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'breakfast', label: 'Breakfast' },
-  { value: 'lunch', label: 'Lunch' },
-  { value: 'dinner', label: 'Dinner' },
-  { value: 'snacks', label: 'Snacks' },
-  { value: 'vegetarian', label: 'Vegetarian' },
-  { value: 'quick-meals', label: 'Quick Meals' },
-]
 
 const DIFFICULTY_OPTIONS: { value: Difficulty | 'all'; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -46,6 +37,7 @@ export default function LibraryPage() {
   const dispatch = useAppDispatch()
   const { items, loading, selectedCategory } = useAppSelector((state) => state.library)
   const { activeFilter, getBlockedIngredientsInRecipe } = useDietaryFilters()
+  const { customCategories, addCategory, deleteCategory } = useRecipeCategories()
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilters, setShowFilters] = useState(false)
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | 'all'>('all')
@@ -74,9 +66,19 @@ export default function LibraryPage() {
     }
   }, [dispatch, items.length])
 
-  const handleCategoryChange = (category: Category | 'all') => {
-    dispatch(setSelectedCategory(category))
+  const handleCategoryChange = (category: string) => {
+    dispatch(setSelectedCategory(category as any))
   }
+
+  // Build categories list with custom categories
+  const categoriesList = useMemo(() => {
+    const list: { value: string; label: string; isCustom?: boolean }[] = [
+      { value: 'all', label: 'All' },
+      ...DEFAULT_RECIPE_CATEGORIES.map(c => ({ value: c.id, label: c.name })),
+      ...customCategories.map(c => ({ value: c.id, label: c.name, isCustom: true })),
+    ]
+    return list
+  }, [customCategories])
 
   const hasActiveFilters = difficultyFilter !== 'all' || timeFilter !== 'all' || hideBlockedRecipes
 
@@ -346,9 +348,12 @@ export default function LibraryPage() {
 
       {/* Category Tabs */}
       <CategoryTabs
-        categories={categories}
+        categories={categoriesList}
         selected={selectedCategory}
         onChange={handleCategoryChange}
+        onAddCategory={addCategory}
+        onDeleteCategory={deleteCategory}
+        showAddButton={true}
       />
 
       {/* Results Count */}

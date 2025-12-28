@@ -5,23 +5,37 @@ import { db } from '../services/firebase'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setRecipes, setLoading } from '../store/recipesSlice'
 import { useDietaryFilters } from '../hooks/useDietaryFilters'
+import { useRecipeCategories, DEFAULT_RECIPE_CATEGORIES } from '../hooks/useRecipeCategories'
 import type { SharedRecipe, Difficulty } from '../types'
 import SearchBar from '../components/recipes/SearchBar'
 import RecipeList from '../components/recipes/RecipeList'
 import PullToRefresh from '../components/ui/PullToRefresh'
 import RecipeFilters, { type TimeFilter, type SortOption } from '../components/recipes/RecipeFilters'
+import CategoryTabs from '../components/library/CategoryTabs'
 
 export default function MyRecipesPage() {
   const dispatch = useAppDispatch()
   const { items, loading, searchQuery } = useAppSelector((state) => state.recipes)
   const { household } = useAppSelector((state) => state.household)
   const { activeFilter, getBlockedIngredientsInRecipe } = useDietaryFilters()
+  const { customCategories, addCategory, deleteCategory } = useRecipeCategories()
   const [refreshing, setRefreshing] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | 'all'>('all')
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all')
   const [sortBy, setSortBy] = useState<SortOption>('newest')
   const [favoritesOnly, setFavoritesOnly] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+
+  // Build categories list with custom categories
+  const categoriesList = useMemo(() => {
+    const list: { value: string; label: string; isCustom?: boolean }[] = [
+      { value: 'all', label: 'All' },
+      ...DEFAULT_RECIPE_CATEGORIES.map(c => ({ value: c.id, label: c.name })),
+      ...customCategories.map(c => ({ value: c.id, label: c.name, isCustom: true })),
+    ]
+    return list
+  }, [customCategories])
 
   useEffect(() => {
     if (!household?.id) {
@@ -51,11 +65,16 @@ export default function MyRecipesPage() {
     return () => unsubscribe()
   }, [dispatch, household?.id])
 
-  // Filter recipes by search query, difficulty, time, and favorites
+  // Filter recipes by search query, category, difficulty, time, and favorites
   const filteredRecipes = items
     .filter((recipe) => {
       // Search filter
       if (!recipe.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false
+      }
+
+      // Category filter
+      if (selectedCategory !== 'all' && recipe.category !== selectedCategory) {
         return false
       }
 
@@ -94,12 +113,13 @@ export default function MyRecipesPage() {
       }
     })
 
-  const hasActiveFilters = difficultyFilter !== 'all' || timeFilter !== 'all' || favoritesOnly
+  const hasActiveFilters = difficultyFilter !== 'all' || timeFilter !== 'all' || favoritesOnly || selectedCategory !== 'all'
 
   const clearFilters = () => {
     setDifficultyFilter('all')
     setTimeFilter('all')
     setFavoritesOnly(false)
+    setSelectedCategory('all')
   }
 
   // Count favorites
@@ -178,7 +198,19 @@ export default function MyRecipesPage() {
           </div>
         </div>
       )}
+      </div>
 
+      {/* Category Tabs */}
+      <CategoryTabs
+        categories={categoriesList}
+        selected={selectedCategory}
+        onChange={setSelectedCategory}
+        onAddCategory={addCategory}
+        onDeleteCategory={deleteCategory}
+        showAddButton={true}
+      />
+
+      <div className="px-4">
       {/* Favorites Quick Filter */}
       {favoritesCount > 0 && (
         <button

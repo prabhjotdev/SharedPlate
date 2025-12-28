@@ -36,6 +36,7 @@ export default function EditRecipePage() {
     prepTime: number | null
     cookTime: number | null
     difficulty: Difficulty | null
+    category: string | null
   }) => {
     setSaving(true)
     try {
@@ -48,6 +49,7 @@ export default function EditRecipePage() {
         prepTime: data.prepTime,
         cookTime: data.cookTime,
         difficulty: data.difficulty,
+        category: data.category,
         updatedAt: serverTimestamp(),
       })
       dispatch(showToast({ message: 'Recipe updated!', type: 'success' }))
@@ -81,6 +83,7 @@ export default function EditRecipePage() {
           prepTime: recipe.prepTime,
           cookTime: recipe.cookTime,
           difficulty: recipe.difficulty,
+          category: recipe.category,
         }}
         onSave={handleSave}
         saving={saving}

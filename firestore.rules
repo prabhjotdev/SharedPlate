@@ -59,6 +59,13 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated();
     }
 
+    // Recipe categories collection (custom categories for filtering)
+    match /recipeCategories/{categoryId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+
     // Allowed users collection (for email allowlist)
     match /allowedUsers/{email} {
       allow read: if isAuthenticated();

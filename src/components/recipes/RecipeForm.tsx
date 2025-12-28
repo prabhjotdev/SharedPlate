@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { DEFAULT_SERVINGS } from '../../utils/servingScaler'
 import { useDietaryFilters } from '../../hooks/useDietaryFilters'
+import { useRecipeCategories } from '../../hooks/useRecipeCategories'
 import type { Difficulty } from '../../types'
 
 interface RecipeFormProps {
@@ -13,6 +14,7 @@ interface RecipeFormProps {
     prepTime?: number
     cookTime?: number
     difficulty?: Difficulty
+    category?: string
   }
   onSave: (data: {
     title: string
@@ -23,6 +25,7 @@ interface RecipeFormProps {
     prepTime: number | null
     cookTime: number | null
     difficulty: Difficulty | null
+    category: string | null
   }) => void
   saving: boolean
   isEdit?: boolean
@@ -43,9 +46,13 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
   const [prepTime, setPrepTime] = useState<string>(initialData?.prepTime?.toString() || '')
   const [cookTime, setCookTime] = useState<string>(initialData?.cookTime?.toString() || '')
   const [difficulty, setDifficulty] = useState<Difficulty | null>(initialData?.difficulty || null)
+  const [category, setCategory] = useState<string>(initialData?.category || '')
 
   // Get dietary filter info
   const { activeFilter, getBlockedIngredientsInRecipe } = useDietaryFilters()
+
+  // Get recipe categories
+  const { allCategories } = useRecipeCategories()
 
   // Check for blocked ingredients in real-time
   const blockedIngredientsFound = useMemo(() => {
@@ -64,6 +71,7 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
       prepTime: prepTime ? parseInt(prepTime) : null,
       cookTime: cookTime ? parseInt(cookTime) : null,
       difficulty,
+      category: category || null,
     })
   }
 
@@ -178,6 +186,25 @@ export default function RecipeForm({ initialData, onSave, saving, isEdit }: Reci
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Category */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Category <span className="text-gray-400">(optional)</span>
+        </label>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+        >
+          <option value="">Select a category</option>
+          {allCategories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>
