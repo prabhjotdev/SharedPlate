@@ -65,7 +65,9 @@ export function useMealPlanner() {
   const startDate = currentWeekDates[0]
   const endDate = nextWeekDates[6]
 
-  // Subscribe to meal plan items for current and next week
+  // Subscribe to meal plan items for the household
+  // We filter by householdId only to avoid needing a composite index,
+  // then filter by date range client-side
   useEffect(() => {
     if (!household?.id) {
       setMealPlanItems([])
@@ -77,21 +79,24 @@ export function useMealPlanner() {
 
     const mealPlanQuery = query(
       collection(db, 'mealPlanItems'),
-      where('householdId', '==', household.id),
-      where('date', '>=', startDate),
-      where('date', '<=', endDate)
+      where('householdId', '==', household.id)
     )
 
     const unsubscribe = onSnapshot(
       mealPlanQuery,
       (snapshot) => {
-        const items: MealPlanItem[] = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate(),
+        const allItems: MealPlanItem[] = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data(),
+          createdAt: docSnap.data().createdAt?.toDate(),
         })) as MealPlanItem[]
 
-        setMealPlanItems(items)
+        // Filter client-side for current and next week dates
+        const filteredItems = allItems.filter(
+          (item) => item.date >= startDate && item.date <= endDate
+        )
+
+        setMealPlanItems(filteredItems)
         setLoading(false)
       },
       (error) => {
