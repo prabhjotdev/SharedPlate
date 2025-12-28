@@ -44,7 +44,12 @@ export function useDietaryFilters() {
 
   // Add a new dietary filter
   const addFilter = async (name: string, blockedIngredients: string[]) => {
-    if (!household?.id || !user?.uid) return;
+    if (!household?.id) {
+      throw new Error('No household selected. Please join or create a household first.');
+    }
+    if (!user?.uid) {
+      throw new Error('You must be logged in to create a filter.');
+    }
 
     await addDoc(collection(db, 'dietaryFilters'), {
       name,
