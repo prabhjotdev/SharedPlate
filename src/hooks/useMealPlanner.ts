@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import {
   collection,
   onSnapshot,
@@ -46,14 +46,24 @@ export function useMealPlanner() {
   const { household } = useAppSelector((state) => state.household)
   const { user } = useAppSelector((state) => state.auth)
 
-  // Calculate current week and next week dates
-  const today = new Date()
-  const currentWeekStart = getStartOfWeek(today)
-  const nextWeekStart = new Date(currentWeekStart)
-  nextWeekStart.setDate(nextWeekStart.getDate() + 7)
+  // Memoize week calculations to prevent re-renders from causing Firestore assertion errors
+  const { currentWeekDates, nextWeekDates, currentWeekStart, nextWeekStart } = useMemo(() => {
+    const today = new Date()
+    const cwStart = getStartOfWeek(today)
+    const nwStart = new Date(cwStart)
+    nwStart.setDate(nwStart.getDate() + 7)
 
-  const currentWeekDates = getWeekDates(currentWeekStart)
-  const nextWeekDates = getWeekDates(nextWeekStart)
+    return {
+      currentWeekStart: cwStart,
+      nextWeekStart: nwStart,
+      currentWeekDates: getWeekDates(cwStart),
+      nextWeekDates: getWeekDates(nwStart),
+    }
+  }, []) // Empty deps - only calculate once per component mount
+
+  // Stable date range for the query
+  const startDate = currentWeekDates[0]
+  const endDate = nextWeekDates[6]
 
   // Subscribe to meal plan items for current and next week
   useEffect(() => {
@@ -64,10 +74,6 @@ export function useMealPlanner() {
     }
 
     setLoading(true)
-
-    // Get the first date of current week and last date of next week
-    const startDate = currentWeekDates[0]
-    const endDate = nextWeekDates[6]
 
     const mealPlanQuery = query(
       collection(db, 'mealPlanItems'),
@@ -95,7 +101,7 @@ export function useMealPlanner() {
     )
 
     return () => unsubscribe()
-  }, [household?.id, currentWeekDates[0], nextWeekDates[6]])
+  }, [household?.id, startDate, endDate])
 
   // Add a recipe to the meal plan
   const addToMealPlan = useCallback(
