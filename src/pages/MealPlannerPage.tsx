@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from '../store'
 import { showToast } from '../store/uiSlice'
 import { useMealPlanner, MEAL_SLOTS, MEAL_FILTER_CATEGORIES } from '../hooks/useMealPlanner'
@@ -25,7 +24,6 @@ function formatWeekRange(dates: string[]): string {
 }
 
 export default function MealPlannerPage() {
-  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { items: recipes } = useAppSelector((state) => state.recipes)
   const {
@@ -98,20 +96,11 @@ export default function MealPlannerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Meal Planner</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Plan your weekly meals</p>
-          </div>
-        </div>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Meal Planner</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Plan your weekly meals</p>
       </div>
 
       {/* Selected Recipe Indicator */}
