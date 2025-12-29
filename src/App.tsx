@@ -93,6 +93,7 @@ function App() {
               <Route index element={<MyRecipesPage />} />
               <Route path="library" element={<LibraryPage />} />
               <Route path="shopping" element={<ShoppingListPage />} />
+              <Route path="meal-planner" element={<MealPlannerPage />} />
               <Route path="recipe/:id" element={<RecipeViewPage />} />
               <Route path="recipe/:id/edit" element={<EditRecipePage />} />
               <Route path="library/:id" element={<LibraryViewPage />} />
@@ -118,18 +119,6 @@ function App() {
                 <ProtectedRoute>
                   <HouseholdRoute>
                     <DietaryFiltersPage />
-                  </HouseholdRoute>
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Meal Planner */}
-            <Route
-              path="/meal-planner"
-              element={
-                <ProtectedRoute>
-                  <HouseholdRoute>
-                    <MealPlannerPage />
                   </HouseholdRoute>
                 </ProtectedRoute>
               }
