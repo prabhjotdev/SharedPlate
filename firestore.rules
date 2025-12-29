@@ -8,12 +8,11 @@ service cloud.firestore {
     }
 
     // Helper function to check if user is in the household
+    // Uses memberUids array for simple string matching
     function isHouseholdMember(householdId) {
       return isAuthenticated() &&
         exists(/databases/$(database)/documents/households/$(householdId)) &&
-        get(/databases/$(database)/documents/households/$(householdId)).data.members.hasAny([
-          {"uid": request.auth.uid}
-        ]);
+        request.auth.uid in get(/databases/$(database)/documents/households/$(householdId)).data.memberUids;
     }
 
     // Check if the incoming data's householdId matches user's household
@@ -32,7 +31,7 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
       allow update, delete: if isAuthenticated() &&
-        resource.data.members.hasAny([{"uid": request.auth.uid}]);
+        request.auth.uid in resource.data.memberUids;
     }
 
     // Invite codes collection

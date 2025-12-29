@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   Timestamp,
   arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore'
 import { db } from './firebase'
 import type { Household, HouseholdMember, InviteCode, MemberPermission, User } from '../types'
@@ -47,6 +48,7 @@ export async function createHousehold(name: string, user: User): Promise<Househo
   await setDoc(householdRef, {
     ...household,
     createdAt: serverTimestamp(),
+    memberUids: [user.uid], // For security rules membership check
     members: [{
       ...member,
       joinedAt: Timestamp.now(),
@@ -182,6 +184,7 @@ export async function joinHouseholdWithCode(code: string, user: User): Promise<H
 
   await updateDoc(householdRef, {
     members: arrayUnion(newMember),
+    memberUids: arrayUnion(user.uid), // For security rules membership check
   })
 
   // Mark invite code as used (optional - you might want to allow multiple uses)
@@ -244,6 +247,7 @@ export async function removeMemberFromHousehold(
       ...m,
       joinedAt: Timestamp.fromDate(m.joinedAt),
     })),
+    memberUids: arrayRemove(memberUid), // Remove from security rules array
   })
 }
 
