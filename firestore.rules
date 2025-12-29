@@ -16,8 +16,19 @@ service cloud.firestore {
         ]);
     }
 
+    // Check if the incoming data's householdId matches user's household
+    function isCreatingForOwnHousehold() {
+      return isHouseholdMember(request.resource.data.householdId);
+    }
+
+    // Check if the existing document belongs to user's household
+    function belongsToUserHousehold() {
+      return isHouseholdMember(resource.data.householdId);
+    }
+
     // Households collection
     match /households/{householdId} {
+      // Users need to read all households to find their own (or use query)
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
       allow update, delete: if isAuthenticated() &&
@@ -25,52 +36,55 @@ service cloud.firestore {
     }
 
     // Invite codes collection
+    // Read: anyone can validate a code (needed for joining)
+    // Create: only household members can create codes for their household
+    // Update/Delete: only household members
     match /inviteCodes/{codeId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update, delete: if isAuthenticated();
+      allow create: if isAuthenticated() && isHouseholdMember(request.resource.data.householdId);
+      allow update, delete: if isAuthenticated() && belongsToUserHousehold();
     }
 
     // Shared recipes collection
     match /sharedRecipes/{recipeId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update, delete: if isAuthenticated();
+      allow read: if isAuthenticated() && belongsToUserHousehold();
+      allow create: if isAuthenticated() && isCreatingForOwnHousehold();
+      allow update, delete: if isAuthenticated() && belongsToUserHousehold();
     }
 
     // Shopping items collection
     match /shoppingItems/{itemId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update, delete: if isAuthenticated();
+      allow read: if isAuthenticated() && belongsToUserHousehold();
+      allow create: if isAuthenticated() && isCreatingForOwnHousehold();
+      allow update, delete: if isAuthenticated() && belongsToUserHousehold();
     }
 
     // Shopping categories collection (custom categories)
     match /shoppingCategories/{categoryId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update, delete: if isAuthenticated();
+      allow read: if isAuthenticated() && belongsToUserHousehold();
+      allow create: if isAuthenticated() && isCreatingForOwnHousehold();
+      allow update, delete: if isAuthenticated() && belongsToUserHousehold();
     }
 
     // Dietary filters collection (ingredients to avoid)
     match /dietaryFilters/{filterId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update, delete: if isAuthenticated();
+      allow read: if isAuthenticated() && belongsToUserHousehold();
+      allow create: if isAuthenticated() && isCreatingForOwnHousehold();
+      allow update, delete: if isAuthenticated() && belongsToUserHousehold();
     }
 
     // Recipe categories collection (custom categories for filtering)
     match /recipeCategories/{categoryId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow delete: if isAuthenticated();
+      allow read: if isAuthenticated() && belongsToUserHousehold();
+      allow create: if isAuthenticated() && isCreatingForOwnHousehold();
+      allow delete: if isAuthenticated() && belongsToUserHousehold();
     }
 
     // Meal plan items collection (weekly meal planning)
     match /mealPlanItems/{itemId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow delete: if isAuthenticated();
+      allow read: if isAuthenticated() && belongsToUserHousehold();
+      allow create: if isAuthenticated() && isCreatingForOwnHousehold();
+      allow delete: if isAuthenticated() && belongsToUserHousehold();
     }
 
     // Allowed users collection (for email allowlist)
