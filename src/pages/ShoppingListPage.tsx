@@ -25,6 +25,7 @@ import {
   addCustomCategoryToFirestore,
 } from '../services/shoppingService'
 import PullToRefresh from '../components/ui/PullToRefresh'
+import { ShoppingListSkeleton } from '../components/ui/Skeleton'
 
 export default function ShoppingListPage() {
   const dispatch = useAppDispatch()
@@ -264,8 +265,12 @@ export default function ShoppingListPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      <div className="px-4 pt-6 pb-24">
+        <div className="mb-6">
+          <div className="skeleton h-8 w-40 rounded mb-2" />
+          <div className="skeleton h-4 w-24 rounded" />
+        </div>
+        <ShoppingListSkeleton count={6} />
       </div>
     )
   }

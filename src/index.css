@@ -195,3 +195,199 @@ html {
   transition-duration: 0.15s;
   transition-timing-function: ease-out;
 }
+
+/* ========================================
+   ACCESSIBILITY FOCUS STATES
+   ======================================== */
+
+/* Visible focus ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Remove default focus for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced focus for buttons */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Focus within for form elements */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--color-primary-500);
+}
+
+/* Skip to content link (screen reader accessible) */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 9999;
+  padding: 1rem;
+  background: var(--color-primary-600);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ========================================
+   STAGGER ANIMATIONS
+   ======================================== */
+
+@keyframes staggerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-stagger-1 { animation: staggerFadeIn 0.3s ease-out 0.05s both; }
+.animate-stagger-2 { animation: staggerFadeIn 0.3s ease-out 0.1s both; }
+.animate-stagger-3 { animation: staggerFadeIn 0.3s ease-out 0.15s both; }
+.animate-stagger-4 { animation: staggerFadeIn 0.3s ease-out 0.2s both; }
+.animate-stagger-5 { animation: staggerFadeIn 0.3s ease-out 0.25s both; }
+.animate-stagger-6 { animation: staggerFadeIn 0.3s ease-out 0.3s both; }
+.animate-stagger-7 { animation: staggerFadeIn 0.3s ease-out 0.35s both; }
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.2s ease-out;
+}
+
+.animate-modalSlideUp {
+  animation: modalSlideUp 0.3s ease-out;
+}
+
+.animate-modalFadeIn {
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+/* ========================================
+   REDUCED MOTION SUPPORT
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .skeleton {
+    animation: none;
+  }
+}
+
+/* ========================================
+   HIGH CONTRAST MODE SUPPORT
+   ======================================== */
+
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary-600: oklch(0.45 0.18 175);
+  }
+
+  button,
+  a {
+    text-decoration-thickness: 2px;
+  }
+
+  .skeleton {
+    border: 2px solid currentColor;
+  }
+}

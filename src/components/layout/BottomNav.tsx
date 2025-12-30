@@ -2,10 +2,15 @@ import { NavLink } from 'react-router-dom'
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2 pb-safe z-40">
+    <nav
+      className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2 pb-safe z-40"
+      role="navigation"
+      aria-label="Main navigation"
+    >
       <div className="max-w-lg mx-auto flex justify-around">
         <NavLink
           to="/"
+          aria-label="My Recipes"
           className={({ isActive }) =>
             `flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[52px] rounded-xl transition-colors ${
               isActive
@@ -14,7 +19,7 @@ export default function BottomNav() {
             }`
           }
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -27,6 +32,7 @@ export default function BottomNav() {
 
         <NavLink
           to="/library"
+          aria-label="Recipe Library"
           className={({ isActive }) =>
             `flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[52px] rounded-xl transition-colors ${
               isActive
@@ -35,7 +41,7 @@ export default function BottomNav() {
             }`
           }
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -48,6 +54,7 @@ export default function BottomNav() {
 
         <NavLink
           to="/shopping"
+          aria-label="Shopping List"
           className={({ isActive }) =>
             `flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[52px] rounded-xl transition-colors ${
               isActive
@@ -56,7 +63,7 @@ export default function BottomNav() {
             }`
           }
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -69,6 +76,7 @@ export default function BottomNav() {
 
         <NavLink
           to="/meal-planner"
+          aria-label="Meal Planner"
           className={({ isActive }) =>
             `flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[52px] rounded-xl transition-colors ${
               isActive
@@ -77,7 +85,7 @@ export default function BottomNav() {
             }`
           }
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
