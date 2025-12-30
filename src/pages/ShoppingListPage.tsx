@@ -265,7 +265,7 @@ export default function ShoppingListPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
       </div>
     )
   }
@@ -431,7 +431,7 @@ export default function ShoppingListPage() {
         {/* Floating Add Button */}
         <button
           onClick={openAddModal}
-          className="fixed bottom-24 right-4 w-14 h-14 bg-orange-500 rounded-full shadow-lg flex items-center justify-center text-white hover:bg-orange-600 transition-colors"
+          className="fixed bottom-24 right-4 w-14 h-14 bg-primary-600 rounded-2xl shadow-lg flex items-center justify-center text-white hover:bg-primary-700 transition-all active:scale-95"
         >
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -583,21 +583,21 @@ export default function ShoppingListPage() {
 
 function EmptyState({ onAddClick }: { onAddClick: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-6">
-      <div className="w-24 h-24 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-6">
-        <svg className="w-12 h-12 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="flex flex-col items-center justify-center py-16 px-6 animate-fadeIn">
+      <div className="w-24 h-24 bg-primary-50 dark:bg-primary-900/30 rounded-3xl flex items-center justify-center mb-6 animate-bounceIn">
+        <svg className="w-12 h-12 text-primary-500 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
       </div>
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-        Your cart is empty!
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+        Your cart is empty
       </h2>
-      <p className="text-gray-500 dark:text-gray-400 text-center mb-8 max-w-xs">
+      <p className="text-gray-500 dark:text-gray-400 text-center mb-8 max-w-xs leading-relaxed">
         Time to stock up! Add items to your shopping list and never forget the essentials again.
       </p>
       <button
         onClick={onAddClick}
-        className="inline-flex items-center justify-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-orange-600 transition-colors"
+        className="inline-flex items-center justify-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-all active:scale-[0.98] shadow-sm min-h-[48px]"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
