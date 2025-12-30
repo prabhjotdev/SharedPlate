@@ -4,7 +4,8 @@ import { showToast } from '../store/uiSlice'
 import { useMealPlanner, MEAL_SLOTS, MEAL_FILTER_CATEGORIES } from '../hooks/useMealPlanner'
 import type { MealSlot, SharedRecipe } from '../types'
 
-const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const DAY_NAMES_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 function formatDateShort(dateStr: string): string {
   const date = new Date(dateStr + 'T00:00:00')
@@ -37,18 +38,18 @@ export default function MealPlannerPage() {
 
   const [selectedFilter, setSelectedFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedRecipe, setSelectedRecipe] = useState<SharedRecipe | null>(null)
   const [activeWeek, setActiveWeek] = useState<'current' | 'next'>('current')
+  const [expandedDay, setExpandedDay] = useState<number | null>(null)
+  const [showRecipePicker, setShowRecipePicker] = useState(false)
+  const [targetSlot, setTargetSlot] = useState<{ date: string; slot: MealSlot } | null>(null)
 
   // Filter recipes based on category and search
   const filteredRecipes = useMemo(() => {
     return recipes.filter((recipe) => {
-      // Search filter
       if (searchQuery && !recipe.title.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false
       }
 
-      // Category filter - map recipe categories to meal slots
       if (selectedFilter !== 'all') {
         const recipeCategory = recipe.category?.toLowerCase() || ''
         if (selectedFilter === 'breakfast' && recipeCategory !== 'breakfast') return false
@@ -63,14 +64,26 @@ export default function MealPlannerPage() {
 
   const weekDates = activeWeek === 'current' ? currentWeekDates : nextWeekDates
 
-  // Handle dropping recipe onto a meal slot
-  const handleDrop = async (date: string, mealSlot: MealSlot) => {
-    if (!selectedRecipe) return
+  // Find today's index
+  const todayStr = new Date().toISOString().split('T')[0]
+  const todayIndex = weekDates.findIndex(d => d === todayStr)
+
+  // Auto-expand today on load
+  useState(() => {
+    if (todayIndex >= 0) {
+      setExpandedDay(todayIndex)
+    }
+  })
+
+  // Handle adding recipe to a slot
+  const handleAddRecipe = async (recipe: SharedRecipe) => {
+    if (!targetSlot) return
 
     try {
-      await addToMealPlan(selectedRecipe.id, selectedRecipe.title, date, mealSlot)
-      dispatch(showToast({ message: `Added ${selectedRecipe.title} to ${mealSlot}`, type: 'success' }))
-      setSelectedRecipe(null)
+      await addToMealPlan(recipe.id, recipe.title, targetSlot.date, targetSlot.slot)
+      dispatch(showToast({ message: `Added ${recipe.title}`, type: 'success' }))
+      setShowRecipePicker(false)
+      setTargetSlot(null)
     } catch (error) {
       dispatch(showToast({ message: 'Failed to add to meal plan', type: 'error' }))
     }
@@ -86,249 +99,289 @@ export default function MealPlannerPage() {
     }
   }
 
-  // Handle selecting a recipe (for mobile tap-to-add flow)
-  const handleSelectRecipe = (recipe: SharedRecipe) => {
-    if (selectedRecipe?.id === recipe.id) {
-      setSelectedRecipe(null)
-    } else {
-      setSelectedRecipe(recipe)
-    }
+  // Open recipe picker for a slot
+  const openRecipePicker = (date: string, slot: MealSlot) => {
+    setTargetSlot({ date, slot })
+    setShowRecipePicker(true)
+  }
+
+  // Toggle day expansion
+  const toggleDay = (index: number) => {
+    setExpandedDay(expandedDay === index ? null : index)
+  }
+
+  // Count meals for a day
+  const getMealCountForDay = (date: string) => {
+    return MEAL_SLOTS.reduce((count, slot) => count + getItemsForSlot(date, slot.id).length, 0)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Meal Planner</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Plan your weekly meals</p>
+    <div className="min-h-screen bg-warm-50 dark:bg-gray-900 pb-20">
+      {/* Week Toggle - Sticky */}
+      <div className="sticky top-14 z-30 bg-warm-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveWeek('current')}
+            className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all min-h-[48px] ${
+              activeWeek === 'current'
+                ? 'bg-primary-600 text-white shadow-sm'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            This Week
+            <span className="block text-xs opacity-80 mt-0.5">{formatWeekRange(currentWeekDates)}</span>
+          </button>
+          <button
+            onClick={() => setActiveWeek('next')}
+            className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all min-h-[48px] ${
+              activeWeek === 'next'
+                ? 'bg-primary-600 text-white shadow-sm'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            Next Week
+            <span className="block text-xs opacity-80 mt-0.5">{formatWeekRange(nextWeekDates)}</span>
+          </button>
+        </div>
       </div>
 
-      {/* Selected Recipe Indicator */}
-      {selectedRecipe && (
-        <div className="bg-orange-50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-800 px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-orange-800 dark:text-orange-200">
-                Selected: <strong>{selectedRecipe.title}</strong>
-              </span>
-            </div>
-            <button
-              onClick={() => setSelectedRecipe(null)}
-              className="text-sm text-orange-600 dark:text-orange-400 font-medium"
-            >
-              Cancel
-            </button>
+      {/* Day Cards - Vertical Scroll */}
+      <div className="p-4 space-y-3">
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
           </div>
-          <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-            Tap a meal slot below to add this recipe
-          </p>
-        </div>
-      )}
+        ) : (
+          weekDates.map((date, index) => {
+            const isToday = date === todayStr
+            const isExpanded = expandedDay === index
+            const mealCount = getMealCountForDay(date)
 
-      <div className="flex flex-col lg:flex-row">
-        {/* Left Side - Recipe List */}
-        <div className="lg:w-80 lg:border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          {/* Search */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="relative">
-              <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search recipes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg text-sm focus:ring-2 focus:ring-orange-500 outline-none"
-              />
-            </div>
-          </div>
-
-          {/* Filter Tabs */}
-          <div className="flex gap-1 p-2 overflow-x-auto border-b border-gray-200 dark:border-gray-700">
-            {MEAL_FILTER_CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedFilter(cat.id)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                  selectedFilter === cat.id
-                    ? 'bg-orange-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+            return (
+              <div
+                key={date}
+                className={`bg-white dark:bg-gray-800 rounded-2xl shadow-sm border overflow-hidden transition-all ${
+                  isToday
+                    ? 'border-primary-300 dark:border-primary-700 ring-2 ring-primary-100 dark:ring-primary-900/50'
+                    : 'border-gray-100 dark:border-gray-700'
                 }`}
               >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Recipe List */}
-          <div className="h-64 lg:h-[calc(100vh-280px)] overflow-y-auto p-2">
-            {filteredRecipes.length === 0 ? (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
-                No recipes found
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {filteredRecipes.map((recipe) => (
-                  <button
-                    key={recipe.id}
-                    onClick={() => handleSelectRecipe(recipe)}
-                    className={`w-full text-left p-3 rounded-lg transition-all ${
-                      selectedRecipe?.id === recipe.id
-                        ? 'bg-orange-100 dark:bg-orange-900/30 border-2 border-orange-500'
-                        : 'bg-gray-50 dark:bg-gray-700/50 border-2 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    <p className="font-medium text-gray-900 dark:text-white text-sm truncate">
-                      {recipe.title}
-                    </p>
-                    {recipe.category && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 capitalize">
-                        {recipe.category}
+                {/* Day Header - Clickable */}
+                <button
+                  onClick={() => toggleDay(index)}
+                  className="w-full flex items-center justify-between p-4 min-h-[60px] text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    {/* Day Circle */}
+                    <div className={`w-12 h-12 rounded-full flex flex-col items-center justify-center ${
+                      isToday
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                    }`}>
+                      <span className="text-xs font-medium">{DAY_NAMES_SHORT[index]}</span>
+                      <span className="text-sm font-bold">{new Date(date + 'T00:00:00').getDate()}</span>
+                    </div>
+                    <div>
+                      <h3 className={`font-semibold ${
+                        isToday ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-white'
+                      }`}>
+                        {isToday ? 'Today' : DAY_NAMES[index]}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {mealCount === 0 ? 'No meals planned' : `${mealCount} meal${mealCount > 1 ? 's' : ''} planned`}
                       </p>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+                    </div>
+                  </div>
+                  <svg
+                    className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-        {/* Right Side - Week Calendar */}
-        <div className="flex-1 p-4">
-          {/* Week Tabs */}
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => setActiveWeek('current')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
-                activeWeek === 'current'
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700'
-              }`}
-            >
-              This Week
-              <span className="block text-xs opacity-75">{formatWeekRange(currentWeekDates)}</span>
-            </button>
-            <button
-              onClick={() => setActiveWeek('next')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
-                activeWeek === 'next'
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700'
-              }`}
-            >
-              Next Week
-              <span className="block text-xs opacity-75">{formatWeekRange(nextWeekDates)}</span>
-            </button>
-          </div>
-
-          {/* Calendar Grid */}
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <div className="min-w-[700px]">
-                {/* Day Headers */}
-                <div className="grid grid-cols-7 gap-1 mb-1">
-                  {weekDates.map((date, index) => {
-                    const isToday = date === new Date().toISOString().split('T')[0]
-                    return (
-                      <div
-                        key={date}
-                        className={`text-center p-2 rounded-t-lg ${
-                          isToday
-                            ? 'bg-orange-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
-                        }`}
-                      >
-                        <div className="text-xs font-medium">{DAY_NAMES[index]}</div>
-                        <div className="text-sm font-bold">{formatDateShort(date)}</div>
-                      </div>
-                    )
-                  })}
-                </div>
-
-                {/* Meal Slots */}
-                {MEAL_SLOTS.map((slot) => (
-                  <div key={slot.id} className="grid grid-cols-7 gap-1 mb-1">
-                    {weekDates.map((date) => {
+                {/* Expanded Content - Meal Slots */}
+                {isExpanded && (
+                  <div className="px-4 pb-4 space-y-3">
+                    {MEAL_SLOTS.map((slot) => {
                       const items = getItemsForSlot(date, slot.id)
-                      const isSelected = !!selectedRecipe
 
                       return (
                         <div
-                          key={`${date}-${slot.id}`}
-                          onClick={() => isSelected && handleDrop(date, slot.id)}
-                          className={`min-h-[80px] p-2 rounded-lg border-2 transition-all ${slot.bgColor} ${slot.borderColor} ${
-                            isSelected
-                              ? 'cursor-pointer hover:border-orange-500 hover:shadow-md'
-                              : ''
-                          }`}
+                          key={slot.id}
+                          className={`rounded-xl p-3 ${slot.bgColor} border ${slot.borderColor}`}
                         >
-                          {/* Slot Label */}
-                          <div className={`text-xs font-medium mb-1 ${slot.color}`}>
-                            {slot.label}
+                          {/* Slot Header */}
+                          <div className="flex items-center justify-between mb-2">
+                            <span className={`font-medium text-sm ${slot.color}`}>
+                              {slot.label}
+                            </span>
+                            <button
+                              onClick={() => openRecipePicker(date, slot.id)}
+                              className={`p-2 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${slot.color} hover:bg-white/50 dark:hover:bg-gray-800/50`}
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                            </button>
                           </div>
 
                           {/* Meal Items */}
-                          <div className="space-y-1">
-                            {items.map((item) => (
-                              <div
-                                key={item.id}
-                                className="group relative bg-white dark:bg-gray-800 rounded p-1.5 shadow-sm text-xs"
-                              >
-                                <p className="text-gray-900 dark:text-white truncate pr-4">
-                                  {item.recipeTitle}
-                                </p>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleRemove(item.id)
-                                  }}
-                                  className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-0.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-opacity"
+                          {items.length > 0 ? (
+                            <div className="space-y-2">
+                              {items.map((item) => (
+                                <div
+                                  key={item.id}
+                                  className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm"
                                 >
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                  </svg>
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Empty State / Drop Target */}
-                          {items.length === 0 && isSelected && (
-                            <div className="flex items-center justify-center h-12 border-2 border-dashed border-orange-300 dark:border-orange-700 rounded text-orange-500 text-xs">
-                              + Add here
+                                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate mr-2">
+                                    {item.recipeTitle}
+                                  </span>
+                                  <button
+                                    onClick={() => handleRemove(item.id)}
+                                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                                  >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              ))}
                             </div>
+                          ) : (
+                            <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                              No {slot.label.toLowerCase()} planned
+                            </p>
                           )}
                         </div>
                       )
                     })}
                   </div>
+                )}
+              </div>
+            )
+          })
+        )}
+      </div>
+
+      {/* Recipe Picker Modal */}
+      {showRecipePicker && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => {
+              setShowRecipePicker(false)
+              setTargetSlot(null)
+            }}
+          />
+          <div className="relative bg-white dark:bg-gray-800 w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[85vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white dark:bg-gray-800 p-4 border-b border-gray-200 dark:border-gray-700 rounded-t-2xl">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Add Recipe</h2>
+                  {targetSlot && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {MEAL_SLOTS.find(s => s.id === targetSlot.slot)?.label} • {formatDateShort(targetSlot.date)}
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={() => {
+                    setShowRecipePicker(false)
+                    setTargetSlot(null)
+                  }}
+                  className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Search */}
+              <div className="relative">
+                <svg
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search recipes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl text-base focus:ring-2 focus:ring-primary-500 outline-none"
+                />
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide">
+                {MEAL_FILTER_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedFilter(cat.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors min-h-[40px] ${
+                      selectedFilter === cat.id
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
                 ))}
               </div>
             </div>
-          )}
 
-          {/* Legend */}
-          <div className="mt-4 flex flex-wrap gap-3 justify-center">
-            {MEAL_SLOTS.map((slot) => (
-              <div key={slot.id} className="flex items-center gap-1.5">
-                <div className={`w-3 h-3 rounded ${slot.bgColor} ${slot.borderColor} border`}></div>
-                <span className="text-xs text-gray-600 dark:text-gray-400">{slot.label}</span>
-              </div>
-            ))}
+            {/* Recipe List */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {filteredRecipes.length === 0 ? (
+                <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                  <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  <p>No recipes found</p>
+                  <p className="text-sm mt-1">Try a different search or filter</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredRecipes.map((recipe) => (
+                    <button
+                      key={recipe.id}
+                      onClick={() => handleAddRecipe(recipe)}
+                      className="w-full text-left p-4 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors active:scale-[0.99] min-h-[60px]"
+                    >
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {recipe.title}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        {recipe.category && (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 capitalize">
+                            {recipe.category}
+                          </span>
+                        )}
+                        {(recipe.prepTime || recipe.cookTime) && (
+                          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {(recipe.prepTime || 0) + (recipe.cookTime || 0)} min
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
