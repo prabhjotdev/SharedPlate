@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
-import { auth } from '../services/firebase'
+import { collection, getDocs, query, where, addDoc, serverTimestamp } from 'firebase/firestore'
+import { auth, db } from '../services/firebase'
 import { useAppSelector, useAppDispatch } from '../store'
 import { setTheme } from '../store/settingsSlice'
 import { setHousehold, addInviteCode } from '../store/householdSlice'
@@ -25,6 +26,9 @@ export default function SettingsPage() {
   const [generatingCode, setGeneratingCode] = useState(false)
   const [inviteCode, setInviteCode] = useState<string | null>(null)
   const [managingMember, setManagingMember] = useState<string | null>(null)
+  const [exporting, setExporting] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const currentUserMember = household?.members.find(m => m.uid === user?.uid)
   const isOwnerOrAdmin = currentUserMember?.role === 'owner' || currentUserMember?.role === 'admin'
@@ -117,6 +121,113 @@ export default function SettingsPage() {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to leave household'
       dispatch(showToast({ message, type: 'error' }))
+    }
+  }
+
+  // Export all recipes as JSON
+  const handleExport = async () => {
+    if (!household) return
+
+    setExporting(true)
+    try {
+      const recipesQuery = query(
+        collection(db, 'sharedRecipes'),
+        where('householdId', '==', household.id)
+      )
+      const snapshot = await getDocs(recipesQuery)
+
+      const recipes = snapshot.docs.map(doc => {
+        const data = doc.data()
+        return {
+          title: data.title,
+          ingredients: data.ingredients,
+          steps: data.steps,
+          notes: data.notes || '',
+          servings: data.servings || null,
+          prepTime: data.prepTime || null,
+          cookTime: data.cookTime || null,
+          difficulty: data.difficulty || null,
+          category: data.category || null,
+          isFavorite: data.isFavorite || false,
+        }
+      })
+
+      const exportData = {
+        exportedAt: new Date().toISOString(),
+        householdName: household.name,
+        recipeCount: recipes.length,
+        recipes,
+      }
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `sharedplate-recipes-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      dispatch(showToast({ message: `Exported ${recipes.length} recipes`, type: 'success' }))
+    } catch (error) {
+      console.error('Export error:', error)
+      dispatch(showToast({ message: 'Failed to export recipes', type: 'error' }))
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  // Import recipes from JSON file
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file || !household || !user) return
+
+    setImporting(true)
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+
+      if (!data.recipes || !Array.isArray(data.recipes)) {
+        throw new Error('Invalid backup file format')
+      }
+
+      let importedCount = 0
+      for (const recipe of data.recipes) {
+        if (!recipe.title || !recipe.ingredients || !recipe.steps) {
+          continue // Skip invalid recipes
+        }
+
+        await addDoc(collection(db, 'sharedRecipes'), {
+          title: recipe.title,
+          ingredients: recipe.ingredients,
+          steps: recipe.steps,
+          notes: recipe.notes || '',
+          servings: recipe.servings || null,
+          prepTime: recipe.prepTime || null,
+          cookTime: recipe.cookTime || null,
+          difficulty: recipe.difficulty || null,
+          category: recipe.category || null,
+          isFavorite: recipe.isFavorite || false,
+          householdId: household.id,
+          createdBy: user.uid,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        })
+        importedCount++
+      }
+
+      dispatch(showToast({ message: `Imported ${importedCount} recipes`, type: 'success' }))
+    } catch (error) {
+      console.error('Import error:', error)
+      const message = error instanceof Error ? error.message : 'Failed to import recipes'
+      dispatch(showToast({ message, type: 'error' }))
+    } finally {
+      setImporting(false)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
     }
   }
 
@@ -330,6 +441,78 @@ export default function SettingsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
+        </section>
+
+        {/* Backup & Restore */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+            Backup & Restore
+          </h2>
+          <div className="space-y-3">
+            {/* Export Button */}
+            <button
+              onClick={handleExport}
+              disabled={exporting || !household}
+              className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-gray-900 dark:text-white">Export Recipes</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Download all recipes as JSON</p>
+                </div>
+              </div>
+              {exporting ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+              ) : (
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              )}
+            </button>
+
+            {/* Import Button */}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importing || !household}
+              className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-gray-900 dark:text-white">Import Recipes</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Restore recipes from JSON backup</p>
+                </div>
+              </div>
+              {importing ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-500"></div>
+              ) : (
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              )}
+            </button>
+
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              className="hidden"
+            />
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+            Export creates a JSON file with all your recipes. Import adds recipes from a backup file.
+          </p>
         </section>
 
         {/* Theme Selection */}
