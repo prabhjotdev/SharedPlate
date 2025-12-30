@@ -8,6 +8,7 @@ import { useDietaryFilters } from '../hooks/useDietaryFilters'
 import { useRecipeCategories, DEFAULT_RECIPE_CATEGORIES } from '../hooks/useRecipeCategories'
 import type { LibraryRecipe, Difficulty } from '../types'
 import CategoryTabs from '../components/library/CategoryTabs'
+import { RecipeGridSkeletonList } from '../components/ui/Skeleton'
 
 type TimeFilter = 'all' | 'quick' | 'medium' | 'long'
 type SortOption = 'name-asc' | 'name-desc' | 'time-asc' | 'time-desc'
@@ -365,9 +366,7 @@ export default function LibraryPage() {
 
       {/* Recipe Grid */}
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-        </div>
+        <RecipeGridSkeletonList count={6} />
       ) : filteredRecipes.length > 0 ? (
         <div className="grid grid-cols-2 gap-3 p-4">
           {filteredRecipes.map((recipe) => {

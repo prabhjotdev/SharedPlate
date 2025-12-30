@@ -79,16 +79,20 @@ export default function RecipeList({ recipes }: RecipeListProps) {
   }
 
   return (
-    <div className="space-y-3">
-      {recipes.map((recipe) => {
+    <div className="space-y-3" role="list" aria-label="Recipe list">
+      {recipes.map((recipe, index) => {
         const blockedIngredients = blockedRecipesMap.get(recipe.id)
         const isBlocked = !!blockedIngredients
+        // Apply stagger animation to first 7 items
+        const staggerClass = index < 7 ? `animate-stagger-${index + 1}` : ''
 
         return (
           <Link
             key={recipe.id}
             to={`/recipe/${recipe.id}`}
-            className={`block bg-white dark:bg-gray-800 rounded-2xl shadow-sm border hover:shadow-md transition-all active:scale-[0.99] ${
+            role="listitem"
+            aria-label={`${recipe.title}${isBlocked ? ', contains dietary restrictions' : ''}`}
+            className={`block bg-white dark:bg-gray-800 rounded-2xl shadow-sm border hover:shadow-md transition-all active:scale-[0.99] ${staggerClass} ${
               isBlocked
                 ? 'border-red-300 dark:border-red-700'
                 : 'border-gray-100 dark:border-gray-700'

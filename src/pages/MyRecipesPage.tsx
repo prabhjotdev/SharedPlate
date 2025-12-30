@@ -12,6 +12,7 @@ import RecipeList from '../components/recipes/RecipeList'
 import PullToRefresh from '../components/ui/PullToRefresh'
 import RecipeFilters, { type TimeFilter, type SortOption } from '../components/recipes/RecipeFilters'
 import CategoryTabs from '../components/library/CategoryTabs'
+import { RecipeListSkeleton } from '../components/ui/Skeleton'
 
 export default function MyRecipesPage() {
   const dispatch = useAppDispatch()
@@ -269,9 +270,7 @@ export default function MyRecipesPage() {
 
       {/* Recipe List */}
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-        </div>
+        <RecipeListSkeleton count={4} />
       ) : filteredRecipes.length > 0 ? (
         <RecipeList recipes={filteredRecipes} />
       ) : items.length === 0 ? (

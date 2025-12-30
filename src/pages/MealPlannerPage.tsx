@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useAppSelector, useAppDispatch } from '../store'
 import { showToast } from '../store/uiSlice'
 import { useMealPlanner, MEAL_SLOTS, MEAL_FILTER_CATEGORIES } from '../hooks/useMealPlanner'
+import { MealPlannerSkeleton } from '../components/ui/Skeleton'
 import type { MealSlot, SharedRecipe } from '../types'
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -148,9 +149,7 @@ export default function MealPlannerPage() {
       {/* Day Cards - Vertical Scroll */}
       <div className="p-4 space-y-3">
         {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-          </div>
+          <MealPlannerSkeleton count={7} />
         ) : (
           weekDates.map((date, index) => {
             const isToday = date === todayStr
