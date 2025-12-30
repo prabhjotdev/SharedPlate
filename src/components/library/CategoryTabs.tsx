@@ -59,10 +59,10 @@ export default function CategoryTabs({
           <button
             key={category.value}
             onClick={() => onChange(category.value)}
-            className={`px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors ${
+            className={`px-4 py-2.5 rounded-full whitespace-nowrap font-medium text-sm transition-colors min-h-[44px] flex items-center ${
               selected === category.value
-                ? 'bg-orange-500 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                ? 'bg-primary-600 text-white'
+                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
             }`}
           >
             {category.label}
@@ -73,7 +73,7 @@ export default function CategoryTabs({
         {showAddButton && (
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-3 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-colors bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center gap-1"
+            className="px-3 py-2.5 rounded-full whitespace-nowrap font-medium text-sm transition-colors bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 flex items-center gap-1 min-h-[44px]"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -116,7 +116,7 @@ export default function CategoryTabs({
                   onChange={(e) => setNewCategoryName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
                   placeholder="e.g., Baking, Grilling, Instant Pot"
-                  className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-orange-500 outline-none"
+                  className="w-full px-4 py-3.5 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-base"
                   autoFocus
                 />
               </div>
@@ -124,7 +124,7 @@ export default function CategoryTabs({
               <button
                 onClick={handleAddCategory}
                 disabled={!newCategoryName.trim() || saving}
-                className="w-full bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary-600 text-white py-3.5 rounded-xl font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px]"
               >
                 {saving ? 'Adding...' : 'Add Category'}
               </button>
@@ -137,7 +137,7 @@ export default function CategoryTabs({
                       setShowAddModal(false)
                       setShowManageModal(true)
                     }}
-                    className="w-full text-center text-sm text-orange-500 hover:text-orange-600 font-medium"
+                    className="w-full text-center text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium py-2"
                   >
                     Manage Custom Categories ({customCategories.length})
                   </button>
@@ -203,7 +203,7 @@ export default function CategoryTabs({
                   setShowManageModal(false)
                   setShowAddModal(true)
                 }}
-                className="w-full mt-4 bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-4 bg-primary-600 text-white py-3.5 rounded-xl font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 min-h-[48px]"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

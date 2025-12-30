@@ -70,17 +70,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col justify-center min-h-screen bg-gray-50 px-6">
+    <div className="flex flex-col justify-center min-h-screen bg-warm-50 px-6">
       <div className="max-w-sm mx-auto w-full">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">SharedPlate</h1>
-          <p className="text-gray-500 mt-2">Cook together, apart</p>
+          <h1 className="text-4xl font-bold text-gray-900">SharedPlate</h1>
+          <p className="text-gray-500 mt-2 text-lg">Cook together, apart</p>
         </div>
 
         {/* Error messages */}
         {(error || authError) && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6 text-sm">
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-base">
             {error || authError}
           </div>
         )}
@@ -94,7 +94,7 @@ export default function LoginPage() {
                 placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+                className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-base"
               />
             </div>
           )}
@@ -104,7 +104,7 @@ export default function LoginPage() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+              className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-base"
               required
             />
           </div>
@@ -114,7 +114,7 @@ export default function LoginPage() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+              className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-base"
               required
               minLength={6}
             />
@@ -122,19 +122,19 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50"
+            className="w-full bg-primary-600 text-white py-4 rounded-xl font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 text-base min-h-[52px]"
           >
             {loading ? (isSignUp ? 'Creating account...' : 'Signing in...') : (isSignUp ? 'Sign Up' : 'Sign In')}
           </button>
         </form>
 
         {/* Toggle Sign In / Sign Up */}
-        <p className="text-center mt-4 text-sm text-gray-600">
+        <p className="text-center mt-4 text-base text-gray-600">
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
           <button
             type="button"
             onClick={() => { setIsSignUp(!isSignUp); setError(null); }}
-            className="text-orange-500 font-semibold hover:underline"
+            className="text-primary-600 font-semibold hover:underline"
           >
             {isSignUp ? 'Sign In' : 'Sign Up'}
           </button>
