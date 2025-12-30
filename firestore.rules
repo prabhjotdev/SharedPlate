@@ -90,5 +90,11 @@ service cloud.firestore {
     match /allowedUsers/{email} {
       allow read: if isAuthenticated();
     }
+
+    // Library recipes collection (public recipe library)
+    // All authenticated users can read, only admins should write (via Firebase console)
+    match /libraryRecipes/{recipeId} {
+      allow read: if isAuthenticated();
+    }
   }
 }
