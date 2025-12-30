@@ -165,7 +165,7 @@ export default function MyRecipesPage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 disabled:opacity-50"
+            className="p-3 text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 disabled:opacity-50 min-w-[44px] min-h-[44px] flex items-center justify-center"
             title="Refresh"
           >
             <svg
@@ -235,10 +235,10 @@ export default function MyRecipesPage() {
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`px-3 rounded-xl border transition-colors flex items-center justify-center ${
+          className={`px-3 rounded-xl border transition-colors flex items-center justify-center min-w-[48px] min-h-[48px] ${
             hasActiveFilters && !favoritesOnly
-              ? 'bg-orange-100 dark:bg-orange-900/30 border-orange-300 dark:border-orange-700 text-orange-600 dark:text-orange-400'
-              : 'bg-gray-100 dark:bg-gray-800 border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400'
+              ? 'bg-primary-100 dark:bg-primary-900/30 border-primary-300 dark:border-primary-700 text-primary-600 dark:text-primary-400'
+              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,7 +255,7 @@ export default function MyRecipesPage() {
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="text-sm text-orange-500 hover:text-orange-600"
+                className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400"
               >
                 Clear all
               </button>
@@ -288,11 +288,11 @@ export default function MyRecipesPage() {
             </span>
           )}
           {timeFilter !== 'all' && (
-            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
               {timeFilter === 'quick' ? '<15 min' : timeFilter === 'medium' ? '15-30 min' : '>30 min'}
             </span>
           )}
-          <button onClick={clearFilters} className="text-orange-500 hover:text-orange-600 ml-1">
+          <button onClick={clearFilters} className="text-primary-600 hover:text-primary-700 ml-1 p-1">
             &times;
           </button>
         </div>
@@ -301,7 +301,7 @@ export default function MyRecipesPage() {
       {/* Recipe List */}
       {loading ? (
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
       ) : filteredRecipes.length > 0 ? (
         <RecipeList recipes={filteredRecipes} />
@@ -313,7 +313,7 @@ export default function MyRecipesPage() {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="mt-2 text-orange-500 hover:text-orange-600 font-medium"
+              className="mt-2 text-primary-600 hover:text-primary-700 font-medium"
             >
               Clear filters
             </button>
@@ -324,7 +324,7 @@ export default function MyRecipesPage() {
         {/* Floating Add Button */}
         <Link
           to="/new"
-          className="fixed bottom-24 right-4 w-14 h-14 bg-orange-500 rounded-full shadow-lg flex items-center justify-center text-white hover:bg-orange-600 transition-colors"
+          className="fixed bottom-24 right-4 w-14 h-14 bg-primary-600 rounded-full shadow-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
         >
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -338,19 +338,19 @@ export default function MyRecipesPage() {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-6">
-      <div className="w-24 h-24 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-6">
-        <svg className="w-12 h-12 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="w-24 h-24 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mb-6">
+        <svg className="w-12 h-12 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       </div>
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No recipes yet</h2>
-      <p className="text-gray-500 dark:text-gray-400 text-center mb-8 max-w-xs">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">No recipes yet</h2>
+      <p className="text-base text-gray-500 dark:text-gray-400 text-center mb-8 max-w-xs">
         Start building your family cookbook! Add your own recipes or find inspiration in the library.
       </p>
       <div className="flex flex-col sm:flex-row gap-3">
         <Link
           to="/new"
-          className="inline-flex items-center justify-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-orange-600 transition-colors"
+          className="inline-flex items-center justify-center gap-2 bg-primary-600 text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-primary-700 transition-colors min-h-[48px]"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -359,7 +359,7 @@ function EmptyState() {
         </Link>
         <Link
           to="/library"
-          className="inline-flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          className="inline-flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3.5 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-h-[48px]"
         >
           Browse Library
         </Link>

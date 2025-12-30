@@ -25,7 +25,7 @@ export default function SearchBar() {
         placeholder="Search recipes..."
         value={searchQuery}
         onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-        className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl focus:ring-2 focus:ring-orange-500 focus:bg-white dark:focus:bg-gray-700 outline-none transition-all placeholder-gray-400"
+        className="w-full pl-10 pr-4 py-3.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all placeholder-gray-400 text-base"
       />
     </div>
   )

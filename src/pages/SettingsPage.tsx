@@ -274,8 +274,8 @@ export default function SettingsPage() {
             Account
           </h2>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
-              <span className="text-orange-600 dark:text-orange-300 font-semibold text-lg">
+            <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+              <span className="text-primary-600 dark:text-primary-300 font-semibold text-lg">
                 {user?.email?.charAt(0).toUpperCase() || '?'}
               </span>
             </div>
@@ -318,7 +318,7 @@ export default function SettingsPage() {
                   </div>
                   <button
                     onClick={handleCopyCode}
-                    className="p-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                    className="p-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors min-w-[48px] min-h-[48px]"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -329,7 +329,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleGenerateInviteCode}
                   disabled={generatingCode}
-                  className="w-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 py-3 rounded-lg font-medium hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors disabled:opacity-50"
+                  className="w-full bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 py-3.5 rounded-xl font-medium hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors disabled:opacity-50 min-h-[48px]"
                 >
                   {generatingCode ? 'Generating...' : 'Generate Invite Code'}
                 </button>
@@ -427,8 +427,8 @@ export default function SettingsPage() {
             className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
@@ -525,22 +525,22 @@ export default function SettingsPage() {
               <button
                 key={option.value}
                 onClick={() => handleThemeChange(option.value)}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                className={`w-full flex items-center gap-3 p-3.5 rounded-xl transition-colors min-h-[52px] ${
                   theme === option.value
-                    ? 'bg-orange-50 dark:bg-orange-900/30 border-2 border-orange-500'
+                    ? 'bg-primary-50 dark:bg-primary-900/30 border-2 border-primary-500'
                     : 'bg-gray-50 dark:bg-gray-700 border-2 border-transparent hover:bg-gray-100 dark:hover:bg-gray-600'
                 }`}
               >
                 <span className="text-xl">{option.icon}</span>
                 <span className={`font-medium ${
                   theme === option.value
-                    ? 'text-orange-600 dark:text-orange-400'
+                    ? 'text-primary-600 dark:text-primary-400'
                     : 'text-gray-700 dark:text-gray-200'
                 }`}>
                   {option.label}
                 </span>
                 {theme === option.value && (
-                  <svg className="w-5 h-5 text-orange-500 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 text-primary-600 dark:text-primary-400 ml-auto" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 )}
