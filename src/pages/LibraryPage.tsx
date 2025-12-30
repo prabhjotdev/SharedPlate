@@ -366,7 +366,7 @@ export default function LibraryPage() {
       {/* Recipe Grid */}
       {loading ? (
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
       ) : filteredRecipes.length > 0 ? (
         <div className="grid grid-cols-2 gap-3 p-4">
@@ -378,7 +378,7 @@ export default function LibraryPage() {
               <Link
                 key={recipe.id}
                 to={`/library/${recipe.id}`}
-                className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow relative ${
+                className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98] relative ${
                   isBlocked ? 'ring-2 ring-red-300 dark:ring-red-700' : ''
                 }`}
               >
@@ -408,15 +408,25 @@ export default function LibraryPage() {
           })}
         </div>
       ) : (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400 px-4">
-          <p>No recipes match your search</p>
+        <div className="flex flex-col items-center justify-center py-16 px-6 animate-fadeIn">
+          <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4">
+            <svg className="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No recipes found</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-xs mb-4">
+            {searchQuery
+              ? `No recipes match "${searchQuery}"`
+              : 'No recipes match your current filters'}
+          </p>
           {(hasActiveFilters || searchQuery) && (
             <button
               onClick={() => {
                 clearFilters()
                 setSearchQuery('')
               }}
-              className="mt-2 text-orange-500 hover:text-orange-600 font-medium"
+              className="px-4 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg transition-colors"
             >
               Clear all filters
             </button>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { collection, onSnapshot, orderBy, query, where, getDocs } from 'firebase/firestore'
 import { db } from '../services/firebase'
 import { useAppDispatch, useAppSelector } from '../store'
-import { setRecipes, setLoading } from '../store/recipesSlice'
+import { setRecipes, setLoading, setSearchQuery } from '../store/recipesSlice'
 import { useDietaryFilters } from '../hooks/useDietaryFilters'
 import { useRecipeCategories, DEFAULT_RECIPE_CATEGORIES } from '../hooks/useRecipeCategories'
 import type { SharedRecipe, Difficulty } from '../types'
@@ -277,23 +277,18 @@ export default function MyRecipesPage() {
       ) : items.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          <p>No recipes match your {hasActiveFilters ? 'filters' : 'search'}</p>
-          {hasActiveFilters && (
-            <button
-              onClick={clearFilters}
-              className="mt-2 text-primary-600 hover:text-primary-700 font-medium"
-            >
-              Clear filters
-            </button>
-          )}
-        </div>
+        <NoResultsState
+          searchQuery={searchQuery}
+          hasFilters={hasActiveFilters}
+          onClearFilters={clearFilters}
+          onClearSearch={() => dispatch(setSearchQuery(''))}
+        />
       )}
 
         {/* Floating Add Button */}
         <Link
           to="/new"
-          className="fixed bottom-24 right-4 w-14 h-14 bg-primary-600 rounded-full shadow-lg flex items-center justify-center text-white hover:bg-primary-700 transition-colors"
+          className="fixed bottom-24 right-4 w-14 h-14 bg-primary-600 rounded-2xl shadow-lg flex items-center justify-center text-white hover:bg-primary-700 transition-all active:scale-95 hover:shadow-xl"
         >
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -306,20 +301,20 @@ export default function MyRecipesPage() {
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-6">
-      <div className="w-24 h-24 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mb-6">
-        <svg className="w-12 h-12 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="flex flex-col items-center justify-center py-16 px-6 animate-fadeIn">
+      <div className="w-24 h-24 bg-primary-50 dark:bg-primary-900/30 rounded-3xl flex items-center justify-center mb-6 animate-bounceIn">
+        <svg className="w-12 h-12 text-primary-500 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       </div>
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">No recipes yet</h2>
-      <p className="text-base text-gray-500 dark:text-gray-400 text-center mb-8 max-w-xs">
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No recipes yet</h2>
+      <p className="text-gray-500 dark:text-gray-400 text-center mb-8 max-w-xs leading-relaxed">
         Start building your family cookbook! Add your own recipes or find inspiration in the library.
       </p>
       <div className="flex flex-col sm:flex-row gap-3">
         <Link
           to="/new"
-          className="inline-flex items-center justify-center gap-2 bg-primary-600 text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-primary-700 transition-colors min-h-[48px]"
+          className="inline-flex items-center justify-center gap-2 bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-all active:scale-[0.98] shadow-sm min-h-[48px]"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -328,10 +323,56 @@ function EmptyState() {
         </Link>
         <Link
           to="/library"
-          className="inline-flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-6 py-3.5 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-h-[48px]"
+          className="inline-flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-all active:scale-[0.98] min-h-[48px]"
         >
           Browse Library
         </Link>
+      </div>
+    </div>
+  )
+}
+
+function NoResultsState({
+  searchQuery,
+  hasFilters,
+  onClearFilters,
+  onClearSearch,
+}: {
+  searchQuery: string
+  hasFilters: boolean
+  onClearFilters: () => void
+  onClearSearch: () => void
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 px-6 animate-fadeIn">
+      <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-4">
+        <svg className="w-10 h-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No results found</h3>
+      <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-xs mb-4">
+        {searchQuery
+          ? `No recipes match "${searchQuery}"`
+          : 'No recipes match your current filters'}
+      </p>
+      <div className="flex gap-2">
+        {searchQuery && (
+          <button
+            onClick={onClearSearch}
+            className="px-4 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg transition-colors"
+          >
+            Clear search
+          </button>
+        )}
+        {hasFilters && (
+          <button
+            onClick={onClearFilters}
+            className="px-4 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg transition-colors"
+          >
+            Clear filters
+          </button>
+        )}
       </div>
     </div>
   )
