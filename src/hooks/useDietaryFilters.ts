@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { collection, onSnapshot, query, where, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAppDispatch, useAppSelector } from '../store';
 import { setDietaryFilters, setLoading, setActiveDietaryFilter } from '../store/libraryCategoriesSlice';
@@ -47,6 +47,32 @@ export function useDietaryFilters() {
     return () => unsubscribe();
   }, [dispatch, household?.id]);
 
+  // Load and subscribe to user's active filter preference from Firestore
+  // This syncs the active filter across all devices
+  useEffect(() => {
+    if (!household?.id || !user?.uid) return;
+
+    const userPrefsDocId = `${household.id}_${user.uid}`;
+    const userPrefsRef = doc(db, 'userDietaryPreferences', userPrefsDocId);
+
+    // Subscribe to changes (so if user changes on another device, it updates here)
+    const unsubscribe = onSnapshot(
+      userPrefsRef,
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          const savedFilterId = data.activeDietaryFilterId || null;
+          dispatch(setActiveDietaryFilter(savedFilterId));
+        }
+      },
+      (error) => {
+        console.error('Error fetching user dietary preferences:', error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [dispatch, household?.id, user?.uid]);
+
   // Get the active filter
   const activeFilter = dietaryFilters.find(f => f.id === activeDietaryFilterId) || null;
 
@@ -81,13 +107,33 @@ export function useDietaryFilters() {
   const deleteFilter = async (filterId: string) => {
     await deleteDoc(doc(db, 'dietaryFilters', filterId));
     if (activeDietaryFilterId === filterId) {
-      dispatch(setActiveDietaryFilter(null));
+      await setActiveFilter(null);
     }
   };
 
-  // Set active filter
-  const setActiveFilter = (filterId: string | null) => {
+  // Set active filter and persist to Firestore for cross-device sync
+  const setActiveFilter = async (filterId: string | null) => {
+    // Update local state immediately for responsiveness
     dispatch(setActiveDietaryFilter(filterId));
+
+    // Persist to Firestore for cross-device sync
+    if (!household?.id || !user?.uid) {
+      return;
+    }
+
+    const userPrefsDocId = `${household.id}_${user.uid}`;
+    const userPrefsRef = doc(db, 'userDietaryPreferences', userPrefsDocId);
+
+    try {
+      await setDoc(userPrefsRef, {
+        activeDietaryFilterId: filterId,
+        householdId: household.id,
+        userId: user.uid,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+    } catch (error) {
+      console.error('Error saving active filter preference:', error);
+    }
   };
 
   // Check if a recipe contains blocked ingredients
