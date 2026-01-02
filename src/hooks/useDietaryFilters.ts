@@ -113,11 +113,10 @@ export function useDietaryFilters() {
 
   // Set active filter and persist to Firestore for cross-device sync
   const setActiveFilter = async (filterId: string | null) => {
-    // Update local state immediately for responsiveness
-    dispatch(setActiveDietaryFilter(filterId));
-
     // Persist to Firestore for cross-device sync
     if (!household?.id || !user?.uid) {
+      // Just update local state if not logged in
+      dispatch(setActiveDietaryFilter(filterId));
       return;
     }
 
@@ -125,14 +124,19 @@ export function useDietaryFilters() {
     const userPrefsRef = doc(db, 'userDietaryPreferences', userPrefsDocId);
 
     try {
+      // Save to Firestore first - the onSnapshot listener will update Redux
       await setDoc(userPrefsRef, {
         activeDietaryFilterId: filterId,
         householdId: household.id,
         userId: user.uid,
         updatedAt: serverTimestamp(),
       }, { merge: true });
+      // If onSnapshot doesn't fire quickly enough, update local state
+      dispatch(setActiveDietaryFilter(filterId));
     } catch (error) {
       console.error('Error saving active filter preference:', error);
+      // Still update local state even if Firestore fails
+      dispatch(setActiveDietaryFilter(filterId));
     }
   };
 
