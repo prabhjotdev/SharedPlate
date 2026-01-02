@@ -31,8 +31,13 @@ export const DEFAULT_CATEGORIES = [
 export async function addShoppingItemToFirestore(
   item: Omit<ShoppingItem, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<string> {
+  // Filter out undefined values as Firestore doesn't support them
+  const cleanItem = Object.fromEntries(
+    Object.entries(item).filter(([_, value]) => value !== undefined)
+  )
+
   const itemRef = await addDoc(collection(db, 'shoppingItems'), {
-    ...item,
+    ...cleanItem,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
@@ -44,9 +49,14 @@ export async function updateShoppingItemInFirestore(
   itemId: string,
   updates: Partial<ShoppingItem>
 ): Promise<void> {
+  // Filter out undefined values as Firestore doesn't support them
+  const cleanUpdates = Object.fromEntries(
+    Object.entries(updates).filter(([_, value]) => value !== undefined)
+  )
+
   const itemRef = doc(db, 'shoppingItems', itemId)
   await updateDoc(itemRef, {
-    ...updates,
+    ...cleanUpdates,
     updatedAt: serverTimestamp(),
   })
 }
