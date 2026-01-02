@@ -72,6 +72,20 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated() && belongsToUserHousehold();
     }
 
+    // User dietary preferences (active filter selection - syncs across devices)
+    match /userDietaryPreferences/{prefId} {
+      // Users can only read/write their own preferences
+      allow read: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+    }
+
     // Recipe categories collection (custom categories for filtering)
     match /recipeCategories/{categoryId} {
       allow read: if isAuthenticated() && belongsToUserHousehold();
@@ -95,6 +109,26 @@ service cloud.firestore {
     // All authenticated users can read, only admins should write (via Firebase console)
     match /libraryRecipes/{recipeId} {
       allow read: if isAuthenticated();
+    }
+
+    // Notification tokens (for push notifications)
+    match /notificationTokens/{tokenId} {
+      // Users can only manage their own tokens
+      allow read: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+    }
+
+    // Notification queue (for Cloud Functions to process)
+    match /notificationQueue/{notificationId} {
+      // Users can create notifications for their household
+      allow create: if isAuthenticated() && isCreatingForOwnHousehold();
+      // Only Cloud Functions should read/update/delete (via admin SDK)
     }
   }
 }
