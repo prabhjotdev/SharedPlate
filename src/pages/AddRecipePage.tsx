@@ -4,6 +4,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db, auth } from '../services/firebase'
 import { useAppDispatch, useAppSelector } from '../store'
 import { showToast } from '../store/uiSlice'
+import { notifyNewRecipe } from '../services/notificationTriggers'
 import RecipeForm from '../components/recipes/RecipeForm'
 import type { Difficulty } from '../types'
 
@@ -11,6 +12,7 @@ export default function AddRecipePage() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { household } = useAppSelector((state) => state.household)
+  const { user } = useAppSelector((state) => state.auth)
   const [saving, setSaving] = useState(false)
 
   const handleSave = async (data: {
@@ -26,7 +28,7 @@ export default function AddRecipePage() {
   }) => {
     setSaving(true)
     try {
-      await addDoc(collection(db, 'sharedRecipes'), {
+      const docRef = await addDoc(collection(db, 'sharedRecipes'), {
         title: data.title,
         ingredients: data.ingredients,
         steps: data.steps,
@@ -42,6 +44,18 @@ export default function AddRecipePage() {
         copiedFromLibrary: null,
         householdId: household?.id,
       })
+
+      // Notify other household members about the new recipe
+      if (household && user) {
+        notifyNewRecipe(
+          docRef.id,
+          data.title,
+          user.displayName || user.email || 'Someone',
+          user.uid,
+          household.id
+        )
+      }
+
       dispatch(showToast({ message: 'Recipe saved!', type: 'success' }))
       navigate('/')
     } catch (error) {
