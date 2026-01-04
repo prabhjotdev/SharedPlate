@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background circle (plate) -->
+  <circle cx="256" cy="256" r="240" fill="#0d9488"/>
+  <!-- Inner plate rim -->
+  <circle cx="256" cy="256" r="200" fill="#14b8a6"/>
+  <!-- Plate center -->
+  <circle cx="256" cy="256" r="160" fill="#faf9f7"/>
+  <!-- Fork (left) -->
+  <g fill="#0d9488">
+    <rect x="120" y="180" width="8" height="100" rx="4"/>
+    <rect x="135" y="180" width="8" height="100" rx="4"/>
+    <rect x="150" y="180" width="8" height="100" rx="4"/>
+    <rect x="120" y="270" width="38" height="80" rx="6"/>
+  </g>
+  <!-- Knife (right) -->
+  <g fill="#0d9488">
+    <path d="M354 180 L370 180 L370 270 C370 280 362 290 354 290 L354 350 C354 356 360 360 366 360 L366 360 C372 360 378 356 378 350 L378 180 L394 180 L394 170 L354 170 Z"/>
+  </g>
+  <!-- Heart in center -->
+  <path d="M256 320 C220 280 180 240 180 200 C180 160 210 140 256 180 C302 140 332 160 332 200 C332 240 292 280 256 320Z" fill="#f97316"/>
+</svg>
