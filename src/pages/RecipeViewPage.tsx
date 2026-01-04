@@ -51,7 +51,7 @@ export default function RecipeViewPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-gray-50 dark:bg-gray-900">
         <p className="text-gray-500 dark:text-gray-400 mb-4">Recipe not found</p>
-        <Link to="/" className="text-orange-500 font-medium">
+        <Link to="/" className="text-primary-500 font-medium">
           Go back
         </Link>
       </div>
@@ -324,7 +324,7 @@ export default function RecipeViewPage() {
             className="p-2 disabled:opacity-50"
             title="Add ingredients to shopping list"
           >
-            <svg className={`w-6 h-6 ${addingToShopping ? 'text-orange-500' : 'text-gray-600 dark:text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-6 h-6 ${addingToShopping ? 'text-primary-500' : 'text-gray-600 dark:text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </button>
@@ -394,7 +394,7 @@ export default function RecipeViewPage() {
               </div>
             )}
             {recipe.prepTime && recipe.cookTime && (
-              <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400">
+              <div className="flex items-center gap-2 text-primary-600 dark:text-primary-400">
                 <span className="text-sm font-medium">
                   Total: {recipe.prepTime + recipe.cookTime} min
                 </span>
@@ -426,7 +426,7 @@ export default function RecipeViewPage() {
         )}
 
         {/* Serving Size Selector */}
-        <div className="flex items-center gap-4 mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
+        <div className="flex items-center gap-4 mb-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Servings:</span>
           <div className="flex items-center gap-3">
             <button
@@ -450,7 +450,7 @@ export default function RecipeViewPage() {
           {servings !== originalServings && (
             <button
               onClick={() => setServings(originalServings)}
-              className="text-xs text-orange-600 dark:text-orange-400 underline ml-auto"
+              className="text-xs text-primary-600 dark:text-primary-400 underline ml-auto"
             >
               Reset
             </button>
@@ -473,7 +473,7 @@ export default function RecipeViewPage() {
             </div>
             <div className="flex items-center gap-2">
               {servings !== originalServings && (
-                <span className="text-xs text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded-full">
+                <span className="text-xs text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 px-2 py-1 rounded-full">
                   Scaled for {servings}
                 </span>
               )}
@@ -490,7 +490,7 @@ export default function RecipeViewPage() {
                     type="checkbox"
                     checked={checkedIngredients.has(index)}
                     onChange={() => toggleIngredient(index)}
-                    className="mt-1.5 w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-orange-500 focus:ring-orange-500 dark:bg-gray-700 cursor-pointer"
+                    className="mt-1.5 w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-primary-500 focus:ring-primary-500 dark:bg-gray-700 cursor-pointer"
                   />
                   <span className={`text-lg leading-relaxed transition-all ${
                     checkedIngredients.has(index)
@@ -531,7 +531,7 @@ export default function RecipeViewPage() {
                     type="checkbox"
                     checked={checkedSteps.has(index)}
                     onChange={() => toggleStep(index)}
-                    className="mt-1.5 w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-orange-500 focus:ring-orange-500 dark:bg-gray-700 cursor-pointer"
+                    className="mt-1.5 w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-primary-500 focus:ring-primary-500 dark:bg-gray-700 cursor-pointer"
                   />
                   <span className={`text-lg leading-relaxed transition-all ${
                     checkedSteps.has(index)
@@ -551,7 +551,7 @@ export default function RecipeViewPage() {
           <div className="mb-6">
             <button
               onClick={clearAllChecks}
-              className="text-sm text-orange-500 hover:text-orange-600 font-medium"
+              className="text-sm text-primary-500 hover:text-primary-600 font-medium"
             >
               Clear all checkmarks
             </button>
@@ -579,7 +579,7 @@ export default function RecipeViewPage() {
         <div className="fixed bottom-24 left-0 right-0 px-6 z-40">
           <button
             onClick={enterCookingMode}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg flex items-center justify-center gap-3 transition-colors"
+            className="w-full bg-primary-500 hover:bg-primary-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg flex items-center justify-center gap-3 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
@@ -620,7 +620,7 @@ export default function RecipeViewPage() {
             {/* Ingredients button */}
             <button
               onClick={() => setShowIngredientsSheet(true)}
-              className="p-2 flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400"
+              className="p-2 flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -632,7 +632,7 @@ export default function RecipeViewPage() {
           {/* Progress Bar */}
           <div className="h-1 bg-gray-200 dark:bg-gray-700">
             <div
-              className="h-full bg-orange-500 transition-all duration-300"
+              className="h-full bg-primary-500 transition-all duration-300"
               style={{ width: `${((currentStepIndex + 1) / stepsList.length) * 100}%` }}
             ></div>
           </div>
@@ -653,7 +653,7 @@ export default function RecipeViewPage() {
                 type="checkbox"
                 checked={checkedSteps.has(currentStepIndex)}
                 onChange={markCurrentStepDone}
-                className="w-7 h-7 rounded border-gray-300 dark:border-gray-600 text-orange-500 focus:ring-orange-500 dark:bg-gray-700 cursor-pointer"
+                className="w-7 h-7 rounded border-gray-300 dark:border-gray-600 text-primary-500 focus:ring-primary-500 dark:bg-gray-700 cursor-pointer"
               />
               <span className={`text-lg ${
                 checkedSteps.has(currentStepIndex)
@@ -681,7 +681,7 @@ export default function RecipeViewPage() {
               {currentStepIndex < stepsList.length - 1 ? (
                 <button
                   onClick={goToNextStep}
-                  className="flex-1 py-4 px-6 rounded-2xl font-semibold text-lg bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2 transition-colors"
+                  className="flex-1 py-4 px-6 rounded-2xl font-semibold text-lg bg-primary-500 hover:bg-primary-600 text-white flex items-center justify-center gap-2 transition-colors"
                 >
                   Next
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -709,7 +709,7 @@ export default function RecipeViewPage() {
                   onClick={() => setCurrentStepIndex(index)}
                   className={`w-3 h-3 rounded-full transition-all ${
                     index === currentStepIndex
-                      ? 'bg-orange-500 w-6'
+                      ? 'bg-primary-500 w-6'
                       : checkedSteps.has(index)
                       ? 'bg-green-500'
                       : 'bg-gray-300 dark:bg-gray-600'
@@ -754,7 +754,7 @@ export default function RecipeViewPage() {
                     {ingredientsList.map((ingredient, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <span className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${
-                          checkedIngredients.has(index) ? 'bg-green-500' : 'bg-orange-500'
+                          checkedIngredients.has(index) ? 'bg-green-500' : 'bg-primary-500'
                         }`} />
                         <span className={`text-base ${
                           checkedIngredients.has(index)
