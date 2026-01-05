@@ -1,128 +1,108 @@
 #!/usr/bin/env node
 /**
- * Icon Generator for SharedPlate PWA
- *
- * This script generates PNG icons from the SVG source.
- *
- * Requirements:
- * - Node.js with canvas support, OR
- * - sharp package (npm install sharp)
- *
- * Usage: node scripts/generate-icons.js
- *
- * If you don't have the required packages, you can use online tools:
- * 1. https://realfavicongenerator.net/
- * 2. https://www.pwabuilder.com/imageGenerator
- *
- * Upload public/icons/icon.svg and download all sizes.
+ * Generate proper PWA icons using pngjs (pure JavaScript)
+ * Creates teal-colored icons with a simple design
  */
 
 const fs = require('fs');
 const path = require('path');
+const { PNG } = require('pngjs');
 
-// Icon sizes needed for PWA
 const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+const outputDir = path.join(__dirname, '../public/icons');
 
-// Try to use sharp if available
-async function generateWithSharp() {
-  try {
-    const sharp = require('sharp');
-    const svgPath = path.join(__dirname, '../public/icons/icon.svg');
-    const outputDir = path.join(__dirname, '../public/icons');
+// Colors
+const TEAL = { r: 13, g: 148, b: 136 };
+const LIGHT_TEAL = { r: 20, g: 184, b: 166 };
+const WHITE = { r: 250, g: 249, b: 247 };
+const ORANGE = { r: 249, g: 115, b: 22 };
 
-    const svgBuffer = fs.readFileSync(svgPath);
+function distance(x1, y1, x2, y2) {
+  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
 
-    for (const size of sizes) {
-      const outputPath = path.join(outputDir, `icon-${size}x${size}.png`);
-      await sharp(svgBuffer)
-        .resize(size, size)
-        .png()
-        .toFile(outputPath);
-      console.log(`Generated: icon-${size}x${size}.png`);
-    }
+function createIcon(size) {
+  const png = new PNG({ width: size, height: size });
+  const center = size / 2;
+  const outerRadius = size * 0.47;
+  const innerRadius = size * 0.39;
+  const plateRadius = size * 0.31;
 
-    // Also generate Apple touch icon
-    await sharp(svgBuffer)
-      .resize(180, 180)
-      .png()
-      .toFile(path.join(outputDir, 'apple-touch-icon.png'));
-    console.log('Generated: apple-touch-icon.png');
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (size * y + x) << 2;
+      const dist = distance(x, y, center, center);
 
-    // Generate favicon
-    await sharp(svgBuffer)
-      .resize(32, 32)
-      .png()
-      .toFile(path.join(outputDir, 'favicon-32x32.png'));
-    console.log('Generated: favicon-32x32.png');
+      let color;
 
-    await sharp(svgBuffer)
-      .resize(16, 16)
-      .png()
-      .toFile(path.join(outputDir, 'favicon-16x16.png'));
-    console.log('Generated: favicon-16x16.png');
+      if (dist <= plateRadius) {
+        color = WHITE;
+      } else if (dist <= innerRadius) {
+        color = LIGHT_TEAL;
+      } else if (dist <= outerRadius) {
+        color = TEAL;
+      } else {
+        color = TEAL; // Background for maskable
+      }
 
-    console.log('\nAll icons generated successfully!');
-  } catch (error) {
-    if (error.code === 'MODULE_NOT_FOUND') {
-      console.log('sharp not found. Install with: npm install sharp');
-      console.log('\nAlternatively, use online tools:');
-      console.log('1. https://realfavicongenerator.net/');
-      console.log('2. https://www.pwabuilder.com/imageGenerator');
-      console.log('\nUpload: public/icons/icon.svg');
-      createPlaceholders();
-    } else {
-      throw error;
+      // Simple heart in center
+      const heartY = center - size * 0.02;
+      const heartSize = size * 0.15;
+      const leftX = center - heartSize * 0.5;
+      const rightX = center + heartSize * 0.5;
+      const circleY = heartY - heartSize * 0.3;
+      const radius = heartSize * 0.55;
+
+      const inLeft = distance(x, y, leftX, circleY) <= radius;
+      const inRight = distance(x, y, rightX, circleY) <= radius;
+
+      let inTriangle = false;
+      const triTop = circleY;
+      const triBottom = heartY + heartSize * 0.8;
+      if (y >= triTop && y <= triBottom) {
+        const progress = (y - triTop) / (triBottom - triTop);
+        const halfWidth = heartSize * (1 - progress);
+        if (x >= center - halfWidth && x <= center + halfWidth) {
+          inTriangle = true;
+        }
+      }
+
+      if ((inLeft || inRight || inTriangle) && dist <= plateRadius * 1.1) {
+        color = ORANGE;
+      }
+
+      png.data[idx] = color.r;
+      png.data[idx + 1] = color.g;
+      png.data[idx + 2] = color.b;
+      png.data[idx + 3] = 255;
     }
   }
+
+  return png;
 }
 
-// Create placeholder PNG files (simple colored squares)
-function createPlaceholders() {
-  console.log('\nCreating placeholder icons...');
+console.log('Generating PWA icons with pngjs...\n');
 
-  // Minimal PNG header for a teal square (very basic, just for build to pass)
-  // In production, replace these with proper icons
-  const outputDir = path.join(__dirname, '../public/icons');
+sizes.forEach(size => {
+  const png = createIcon(size);
+  const filename = `icon-${size}x${size}.png`;
+  const buffer = PNG.sync.write(png);
+  fs.writeFileSync(path.join(outputDir, filename), buffer);
+  console.log(`✓ ${filename} (${buffer.length} bytes)`);
+});
 
-  sizes.forEach(size => {
-    const filename = `icon-${size}x${size}.png`;
-    const filepath = path.join(outputDir, filename);
+// Apple touch icon
+const apple = createIcon(180);
+const appleBuffer = PNG.sync.write(apple);
+fs.writeFileSync(path.join(outputDir, 'apple-touch-icon.png'), appleBuffer);
+console.log(`✓ apple-touch-icon.png (${appleBuffer.length} bytes)`);
 
-    // Create a minimal valid PNG (1x1 teal pixel, will be stretched)
-    // This is a placeholder - use proper icons in production
-    const minimalPng = Buffer.from([
-      0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
-      0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR chunk
-      0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, // 1x1 dimensions
-      0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xDE,
-      0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41, 0x54, // IDAT chunk
-      0x08, 0xD7, 0x63, 0x10, 0x65, 0x60, 0x00, 0x00,
-      0x00, 0x21, 0x00, 0x11, 0xA7, 0x5D, 0x7B, 0x3B,
-      0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, // IEND chunk
-      0xAE, 0x42, 0x60, 0x82
-    ]);
+// Favicons
+[32, 16].forEach(size => {
+  const png = createIcon(size);
+  const buffer = PNG.sync.write(png);
+  fs.writeFileSync(path.join(outputDir, `favicon-${size}x${size}.png`), buffer);
+  console.log(`✓ favicon-${size}x${size}.png (${buffer.length} bytes)`);
+});
 
-    fs.writeFileSync(filepath, minimalPng);
-    console.log(`Created placeholder: ${filename}`);
-  });
-
-  // Create apple-touch-icon placeholder
-  fs.writeFileSync(path.join(outputDir, 'apple-touch-icon.png'), Buffer.from([
-    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
-    0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
-    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
-    0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xDE,
-    0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41, 0x54,
-    0x08, 0xD7, 0x63, 0x10, 0x65, 0x60, 0x00, 0x00,
-    0x00, 0x21, 0x00, 0x11, 0xA7, 0x5D, 0x7B, 0x3B,
-    0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44,
-    0xAE, 0x42, 0x60, 0x82
-  ]));
-  console.log('Created placeholder: apple-touch-icon.png');
-
-  console.log('\n⚠️  These are placeholder icons!');
-  console.log('For production, generate proper icons from public/icons/icon.svg');
-  console.log('Use: https://realfavicongenerator.net/ or https://www.pwabuilder.com/imageGenerator');
-}
-
-generateWithSharp();
+console.log('\n✅ Done! Icons are now valid PNGs for PWA installation.');
