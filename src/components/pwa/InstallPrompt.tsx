@@ -104,7 +104,7 @@ export default function InstallPrompt() {
             className="absolute inset-0 bg-black/50"
             onClick={handleDismiss}
           />
-          <div className="relative bg-white dark:bg-gray-800 w-full max-w-md rounded-t-2xl p-6 animate-modalSlideUp">
+          <div className="relative bg-white dark:bg-gray-800 w-full max-w-md rounded-t-2xl p-6 pb-safe animate-modalSlideUp">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-primary-100 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <svg
